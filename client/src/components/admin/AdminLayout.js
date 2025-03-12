@@ -94,20 +94,11 @@ const AdminLayout = () => {
     <Box sx={{ display: 'flex' }}>
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
           zIndex: theme.zIndex.drawer + 1,
-          transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-          ...(open && {
-            marginLeft: drawerWidth,
-            width: `calc(100% - ${drawerWidth}px)`,
-            transition: theme.transitions.create(['width', 'margin'], {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.enteringScreen,
-            }),
-          }),
+          borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+          width: '100%' // Always take full width
         }}
       >
         <Toolbar>
@@ -183,19 +174,22 @@ const AdminLayout = () => {
       </AppBar>
       
       <Drawer
-        variant={isMobile ? "temporary" : "permanent"}
+        variant={isMobile ? "temporary" : "persistent"}
         open={open}
         onClose={isMobile ? handleDrawerToggle : undefined}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile
+        }}
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
+          display: { xs: 'block', sm: 'block' },
+          '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
+            width: drawerWidth,
+            borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+            mt: '64px', // Height of AppBar
           },
         }}
       >
-        <Toolbar />
         <Box sx={{ overflow: 'auto', mt: 2 }}>
           <List>
             {menuItems.map((item) => (
@@ -223,8 +217,20 @@ const AdminLayout = () => {
         </Box>
       </Drawer>
       
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1, 
+          p: 3, 
+          mt: 8,
+          width: { sm: `calc(100% - ${open ? drawerWidth : 0}px)` },
+          ml: { sm: open ? `${drawerWidth}px` : 0 },
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
+      >
         <Outlet />
       </Box>
     </Box>

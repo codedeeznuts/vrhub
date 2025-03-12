@@ -230,31 +230,25 @@ const Navbar = () => {
         open={Boolean(mobileMenuAnchorEl)}
         onClose={() => setMobileMenuAnchorEl(null)}
       >
-        {!isAuthenticated && (
-          <>
-            <MenuItem onClick={() => { setMobileMenuAnchorEl(null); navigate('/login'); }}>
-              Login
-            </MenuItem>
-            <MenuItem onClick={() => { setMobileMenuAnchorEl(null); navigate('/register'); }}>
-              Register
-            </MenuItem>
-          </>
-        )}
-        {isAuthenticated && (
-          <>
-            {isAdmin && (
-              <MenuItem onClick={() => { setMobileMenuAnchorEl(null); navigate('/admin'); }}>
-                Admin Dashboard
-              </MenuItem>
-            )}
-            <MenuItem onClick={() => { setMobileMenuAnchorEl(null); navigate('/liked'); }}>
-              Liked Videos
-            </MenuItem>
-            <MenuItem onClick={() => { setMobileMenuAnchorEl(null); logout(); navigate('/'); }}>
-              Logout
-            </MenuItem>
-          </>
-        )}
+        {!isAuthenticated ? [
+          <MenuItem key="login" onClick={() => { setMobileMenuAnchorEl(null); navigate('/login'); }}>
+            Login
+          </MenuItem>,
+          <MenuItem key="register" onClick={() => { setMobileMenuAnchorEl(null); navigate('/register'); }}>
+            Register
+          </MenuItem>
+        ] : [
+          isAdmin && 
+          <MenuItem key="admin" onClick={() => { setMobileMenuAnchorEl(null); navigate('/admin'); }}>
+            Admin Dashboard
+          </MenuItem>,
+          <MenuItem key="liked" onClick={() => { setMobileMenuAnchorEl(null); navigate('/liked'); }}>
+            Liked Videos
+          </MenuItem>,
+          <MenuItem key="logout" onClick={() => { setMobileMenuAnchorEl(null); logout(); navigate('/'); }}>
+            Logout
+          </MenuItem>
+        ].filter(Boolean)}
       </Menu>
     </Box>
   );

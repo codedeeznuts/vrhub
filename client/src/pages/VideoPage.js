@@ -124,7 +124,7 @@ const VideoPage = () => {
                     label={video.studio_name}
                     color="primary"
                     variant="outlined"
-                    onClick={() => navigate(`/studio/${video.studio_id}`)}
+                    onClick={() => navigate(`studio/${video.studio_id}`)}
                     sx={{ mr: 1 }}
                   />
                 )}
@@ -166,7 +166,7 @@ const VideoPage = () => {
                     key={tag.id}
                     label={tag.name}
                     size="small"
-                    onClick={() => navigate(`/tag/${tag.id}`)}
+                    onClick={() => navigate(`tag/${tag.id}`)}
                   />
                 ))}
               </Box>
