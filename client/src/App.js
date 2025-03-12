@@ -39,6 +39,10 @@ function App() {
         <Router>
           <CssBaseline />
           <Routes>
+            {/* Auth Routes - Standalone without sidebar */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
             {/* Admin Routes with AdminLayout */}
             <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
               <Route index element={<AdminDashboard />} />
@@ -59,8 +63,6 @@ function App() {
                     <Routes>
                       {/* Public Routes */}
                       <Route index element={<Home />} />
-                      <Route path="login" element={<Login />} />
-                      <Route path="register" element={<Register />} />
                       <Route path="video/:id" element={<VideoPage />} />
                       <Route path="tag/:id" element={<TagVideos />} />
                       <Route path="studio/:id" element={<StudioVideos />} />

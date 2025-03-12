@@ -106,7 +106,14 @@ const Navbar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
+      <AppBar 
+        position="fixed" 
+        elevation={0} 
+        sx={{ 
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          borderBottom: (theme) => `1px solid ${theme.palette.divider}`
+        }}
+      >
         <Toolbar>
           {isMobile && (
             <IconButton
