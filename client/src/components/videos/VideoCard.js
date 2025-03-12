@@ -78,17 +78,25 @@ const VideoCard = ({ video, onLikeToggle }) => {
         boxShadow: 'none',
         border: 'none',
         overflow: 'hidden',
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
+        m: 0
       }}
     >
-      <Box sx={{ position: 'relative' }} onClick={handleCardClick}>
+      <Box sx={{ position: 'relative', width: '100%', paddingTop: '56.25%' }} onClick={handleCardClick}>
         {/* Video Thumbnail */}
         <CardMedia
           component="img"
-          height="180"
           image={video.thumbnail_url || DEFAULT_THUMBNAIL}
           alt={video.title}
-          sx={{ cursor: 'pointer' }}
+          sx={{ 
+            cursor: 'pointer',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
         />
         <Box 
           sx={{ 
@@ -110,7 +118,7 @@ const VideoCard = ({ video, onLikeToggle }) => {
       <Box sx={{ 
         display: 'flex', 
         bgcolor: 'transparent', 
-        p: 1,
+        p: 0.5,
         alignItems: 'flex-start'
       }}>
         {/* Studio Avatar */}

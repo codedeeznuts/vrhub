@@ -105,7 +105,7 @@ const VideoPage = () => {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box sx={{ mt: 2, mb: 6 }}>
         {/* VR Player */}
         <VRPlayer 
@@ -185,7 +185,7 @@ const VideoPage = () => {
             <Typography variant="h5" gutterBottom>
               Related Videos
             </Typography>
-            <Grid container spacing={3}>
+            <Grid container spacing={1.5}>
               {relatedVideos.map(relatedVideo => (
                 <Grid item key={relatedVideo.id} xs={12} sm={6} md={3}>
                   <VideoCard video={relatedVideo} />

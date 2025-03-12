@@ -9,7 +9,8 @@ import {
   Alert,
   ToggleButtonGroup,
   ToggleButton,
-  Paper
+  Paper,
+  Divider
 } from '@mui/material';
 import {
   Sort as SortIcon,
@@ -130,33 +131,52 @@ const Home = () => {
   return (
     <Container maxWidth="xl">
       <Box sx={{ mt: 2, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" component="h1">
-            VR Porn Videos Top Rated
-          </Typography>
-          
-          <Paper elevation={0} sx={{ display: 'flex', alignItems: 'center', p: 1, bgcolor: 'background.paper' }}>
-            <ToggleButtonGroup
-              value={sortBy}
-              exclusive
-              onChange={handleSortChange}
-              aria-label="video sorting"
-              size="small"
-            >
-              <ToggleButton value="newest" aria-label="sort by newest">
-                <NewIcon fontSize="small" sx={{ mr: 0.5 }} />
-                New
-              </ToggleButton>
-              <ToggleButton value="most_liked" aria-label="sort by most liked">
-                <LikeIcon fontSize="small" sx={{ mr: 0.5 }} />
-                Most Liked
-              </ToggleButton>
-              <ToggleButton value="random" aria-label="sort randomly">
-                <RandomIcon fontSize="small" sx={{ mr: 0.5 }} />
-                Random
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Paper>
+        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+          VR Porn Videos Top Rated
+        </Typography>
+        
+        {/* Full width filter bar */}
+        <Box sx={{ mb: 2 }}>
+          <ToggleButtonGroup
+            value={sortBy}
+            exclusive
+            onChange={handleSortChange}
+            aria-label="video sorting"
+            size="small"
+            sx={{
+              '& .MuiToggleButtonGroup-grouped': {
+                border: 0,
+                mx: 0.5,
+                '&.Mui-selected': {
+                  borderRadius: '20px',
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  }
+                },
+                '&:not(:first-of-type)': {
+                  borderRadius: '20px',
+                },
+                '&:first-of-type': {
+                  borderRadius: '20px',
+                }
+              }
+            }}
+          >
+            <ToggleButton value="newest" aria-label="sort by newest">
+              <NewIcon fontSize="small" sx={{ mr: 0.5 }} />
+              New
+            </ToggleButton>
+            <ToggleButton value="most_liked" aria-label="sort by most liked">
+              <LikeIcon fontSize="small" sx={{ mr: 0.5 }} />
+              Most Liked
+            </ToggleButton>
+            <ToggleButton value="random" aria-label="sort randomly">
+              <RandomIcon fontSize="small" sx={{ mr: 0.5 }} />
+              Random
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Box>
         
         {error && (
@@ -175,7 +195,7 @@ const Home = () => {
               Showing {videos.length} of {pagination.totalVideos} videos
             </Typography>
             
-            <Grid container spacing={3}>
+            <Grid container spacing={1.5}>
               {videos.map((video) => (
                 <Grid item key={video.id} xs={12} sm={6} md={4} lg={3}>
                   <VideoCard video={video} onLikeToggle={handleLikeToggle} />
