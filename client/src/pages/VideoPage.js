@@ -108,7 +108,11 @@ const VideoPage = () => {
     <Container maxWidth="lg">
       <Box sx={{ mt: 2, mb: 6 }}>
         {/* VR Player */}
-        <VRPlayer videoUrl={video.video_url} title={video.title} />
+        <VRPlayer 
+          videoUrl={video.video_url} 
+          title={video.title} 
+          thumbnailUrl={video.thumbnail_url} 
+        />
         
         {/* Video Info */}
         <Paper sx={{ p: 3, mt: 2 }}>

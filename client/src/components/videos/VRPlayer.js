@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
-const VRPlayer = ({ videoUrl, title }) => {
-  const [loading, setLoading] = useState(true);
+const VRPlayer = ({ videoUrl, title, thumbnailUrl }) => {
   const [error, setError] = useState(null);
   const containerRef = useRef(null);
   const scriptLoaded = useRef(false);
   
   useEffect(() => {
+    // Reset error state when video URL changes
+    setError(null);
+    
     // Function to load the DL8 script
     const loadScript = () => {
       return new Promise((resolve, reject) => {
@@ -48,10 +50,23 @@ const VRPlayer = ({ videoUrl, title }) => {
       // Create the dl8-video element
       const playerElement = document.createElement('dl8-video');
       playerElement.setAttribute('title', title || 'VR Video');
-      playerElement.setAttribute('format', 'mono');
+      playerElement.setAttribute('format', 'STEREO_180_LR');
       playerElement.setAttribute('display-mode', 'stereo');
+      playerElement.setAttribute('loop', '');
+      
+      // Add poster/thumbnail if available
+      if (thumbnailUrl) {
+        playerElement.setAttribute('poster', thumbnailUrl);
+      }
+      
       playerElement.style.width = '100%';
       playerElement.style.height = '100%';
+      
+      // Add event listener for errors
+      playerElement.addEventListener('error', (e) => {
+        console.error('DL8 player error:', e);
+        setError('Error playing VR video. The format may be unsupported.');
+      });
       
       // Create source element
       const sourceElement = document.createElement('source');
@@ -63,16 +78,7 @@ const VRPlayer = ({ videoUrl, title }) => {
       
       // Append player to container
       containerRef.current.appendChild(playerElement);
-      
-      // Set loading to false after a short delay
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
     };
-    
-    // Reset states when video URL changes
-    setLoading(true);
-    setError(null);
     
     // Load script and initialize player
     loadScript()
@@ -81,7 +87,6 @@ const VRPlayer = ({ videoUrl, title }) => {
       })
       .catch((err) => {
         setError(err.message);
-        setLoading(false);
       });
     
     // Cleanup function
@@ -91,10 +96,11 @@ const VRPlayer = ({ videoUrl, title }) => {
         containerRef.current.innerHTML = '';
       }
     };
-  }, [videoUrl, title]); // Dependencies
+  }, [videoUrl, title, thumbnailUrl]); // Dependencies
   
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
+      {/* DL8 VR Player Container */}
       <Box
         ref={containerRef}
         sx={{
@@ -104,30 +110,6 @@ const VRPlayer = ({ videoUrl, title }) => {
           position: 'relative'
         }}
       />
-      
-      {/* Loading Indicator */}
-      {loading && (
-        <Box 
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            zIndex: 10,
-            backgroundColor: 'rgba(0,0,0,0.7)'
-          }}
-        >
-          <CircularProgress color="primary" />
-          <Typography variant="body2" sx={{ mt: 2, color: '#fff' }}>
-            Loading VR Player...
-          </Typography>
-        </Box>
-      )}
       
       {/* Error Message */}
       {error && (
@@ -146,7 +128,7 @@ const VRPlayer = ({ videoUrl, title }) => {
             backgroundColor: 'rgba(0,0,0,0.7)'
           }}
         >
-          <Typography variant="body2" sx={{ color: '#fff' }}>
+          <Typography variant="body2" sx={{ color: '#fff', textAlign: 'center' }}>
             {error}
           </Typography>
         </Box>
