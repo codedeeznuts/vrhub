@@ -36,27 +36,24 @@ const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Fetch videos when sortBy changes
   useEffect(() => {
-    const fetchVideos = async () => {
+    console.log('sortBy changed to:', sortBy);
+    
+    const fetchVideosOnSortChange = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        // Get page and sort from URL query params
+        // Get page from URL query params
         const params = new URLSearchParams(location.search);
         const page = parseInt(params.get('page')) || 1;
-        const sort = params.get('sort') || 'newest';
         
-        // Update sort state
-        setSortBy(sort);
-        
-        console.log('Fetching videos, page:', page, 'sort:', sort);
+        console.log('Fetching videos on sort change, page:', page, 'sort:', sortBy);
         
         const res = await axios.get('/api/videos', {
-          params: { page, limit: 20, sortBy: sort }
+          params: { page, limit: 20, sort: sortBy }
         });
-        
-        console.log('API response:', res.data);
         
         // Check if videos array exists
         if (!res.data.videos) {
@@ -72,7 +69,7 @@ const Home = () => {
           likes_count: video.likes_count || 0
         }));
         
-        console.log('Processed videos:', processedVideos);
+        console.log('Videos after sort change:', processedVideos);
         
         setVideos(processedVideos);
         setPagination({
@@ -82,28 +79,42 @@ const Home = () => {
         });
       } catch (err) {
         console.error('Error fetching videos:', err);
-        console.error('Error details:', err.response?.data || err.message);
         setError('Failed to load videos. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchVideos();
+    fetchVideosOnSortChange();
+  }, [sortBy, location.search]);
+
+  useEffect(() => {
+    // Update sortBy from URL when location changes
+    const params = new URLSearchParams(location.search);
+    const sortParam = params.get('sort');
+    if (sortParam && sortParam !== sortBy) {
+      console.log('Updating sortBy from URL:', sortParam);
+      setSortBy(sortParam);
+    }
   }, [location.search]);
 
   const handlePageChange = (page) => {
     // Update URL with new page
     const searchParams = new URLSearchParams(location.search);
     searchParams.set('page', page);
-    window.history.pushState(null, '', `?${searchParams.toString()}`);
-    
-    // Force re-render
-    window.dispatchEvent(new Event('popstate'));
+    navigate(`?${searchParams.toString()}`);
   };
 
   const handleSortChange = (event, newSort) => {
-    if (newSort !== null) {
+    if (newSort !== null && newSort !== sortBy) {
+      console.log('Sort button clicked:', newSort);
+      
+      // Force a re-render by setting loading
+      setLoading(true);
+      
+      // Directly update the sort state
+      setSortBy(newSort);
+      
       // Update URL with new sort
       const searchParams = new URLSearchParams(location.search);
       searchParams.set('sort', newSort);
@@ -195,10 +206,14 @@ const Home = () => {
               Showing {videos.length} of {pagination.totalVideos} videos
             </Typography>
             
-            <Grid container spacing={1.5}>
+            <Grid container spacing={1.5} key={`video-grid-${sortBy}`}>
               {videos.map((video) => (
                 <Grid item key={video.id} xs={12} sm={6} md={4} lg={3}>
-                  <VideoCard video={video} onLikeToggle={handleLikeToggle} />
+                  <VideoCard 
+                    key={`${video.id}-${sortBy}`} 
+                    video={video} 
+                    onLikeToggle={handleLikeToggle} 
+                  />
                 </Grid>
               ))}
             </Grid>

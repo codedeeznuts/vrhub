@@ -49,7 +49,7 @@ const SearchResults = () => {
         // Update sort state
         setSortBy(sort);
         
-        const res = await axios.get(`/api/videos?search=${encodeURIComponent(query)}&sortBy=${sort}`);
+        const res = await axios.get(`/api/videos?search=${encodeURIComponent(query)}&sort=${sort}`);
         setVideos(res.data.videos);
         
         setError(null);

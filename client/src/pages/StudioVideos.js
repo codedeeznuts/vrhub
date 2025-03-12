@@ -48,7 +48,7 @@ const StudioVideos = () => {
         setStudio(studioRes.data);
         
         // Get videos for this studio
-        const videosRes = await axios.get(`/api/videos?studio=${id}&sortBy=${sort}`);
+        const videosRes = await axios.get(`/api/videos?studio=${id}&sort=${sort}`);
         setVideos(videosRes.data.videos);
         
         setError(null);

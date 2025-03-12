@@ -47,7 +47,7 @@ const TagVideos = () => {
         setTag(tagRes.data);
         
         // Get videos for this tag
-        const videosRes = await axios.get(`/api/videos?tag=${id}&sortBy=${sort}`);
+        const videosRes = await axios.get(`/api/videos?tag=${id}&sort=${sort}`);
         setVideos(videosRes.data.videos);
         
         setError(null);

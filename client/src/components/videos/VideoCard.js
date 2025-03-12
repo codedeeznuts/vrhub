@@ -1,3 +1,4 @@
+import React from 'react';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -188,4 +189,5 @@ const VideoCard = ({ video, onLikeToggle }) => {
   );
 };
 
-export default VideoCard; 
+// Export with React.memo to prevent unnecessary re-renders
+export default React.memo(VideoCard); 
