@@ -74,6 +74,9 @@ exports.getVideos = async (req, res) => {
       case 'title':
         query += ` ORDER BY v.title ASC`;
         break;
+      case 'random':
+        query += ` ORDER BY RANDOM()`;
+        break;
       case 'newest':
       default:
         query += ` ORDER BY v.created_at DESC`;

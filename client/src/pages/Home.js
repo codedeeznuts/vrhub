@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
   Grid,
   Box,
   CircularProgress,
-  Alert
+  Alert,
+  ToggleButtonGroup,
+  ToggleButton,
+  Paper
 } from '@mui/material';
+import {
+  Sort as SortIcon,
+  NewReleases as NewIcon,
+  Favorite as LikeIcon,
+  Shuffle as RandomIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 import VideoCard from '../components/videos/VideoCard';
 import Pagination from '../components/layout/Pagination';
@@ -21,8 +30,10 @@ const Home = () => {
     totalPages: 1,
     totalVideos: 0
   });
+  const [sortBy, setSortBy] = useState('newest');
   
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -30,17 +41,18 @@ const Home = () => {
         setLoading(true);
         setError(null);
         
-        // Get page from URL query params
+        // Get page and sort from URL query params
         const params = new URLSearchParams(location.search);
         const page = parseInt(params.get('page')) || 1;
+        const sort = params.get('sort') || 'newest';
         
-        console.log('Fetching videos, page:', page);
+        // Update sort state
+        setSortBy(sort);
         
-        // Add a delay to ensure the server is ready
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('Fetching videos, page:', page, 'sort:', sort);
         
         const res = await axios.get('/api/videos', {
-          params: { page, limit: 20 }
+          params: { page, limit: 20, sortBy: sort }
         });
         
         console.log('API response:', res.data);
@@ -89,6 +101,16 @@ const Home = () => {
     window.dispatchEvent(new Event('popstate'));
   };
 
+  const handleSortChange = (event, newSort) => {
+    if (newSort !== null) {
+      // Update URL with new sort
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.set('sort', newSort);
+      searchParams.set('page', '1'); // Reset to page 1 when changing sort
+      navigate(`?${searchParams.toString()}`);
+    }
+  };
+
   const handleLikeToggle = (videoId, isLiked, likesCount) => {
     setVideos(videos.map(video => 
       video.id === videoId 
@@ -108,9 +130,34 @@ const Home = () => {
   return (
     <Container maxWidth="xl">
       <Box sx={{ mt: 2, mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Explore VR Videos
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h4" component="h1">
+            VR Porn Videos Top Rated
+          </Typography>
+          
+          <Paper elevation={0} sx={{ display: 'flex', alignItems: 'center', p: 1, bgcolor: 'background.paper' }}>
+            <ToggleButtonGroup
+              value={sortBy}
+              exclusive
+              onChange={handleSortChange}
+              aria-label="video sorting"
+              size="small"
+            >
+              <ToggleButton value="newest" aria-label="sort by newest">
+                <NewIcon fontSize="small" sx={{ mr: 0.5 }} />
+                New
+              </ToggleButton>
+              <ToggleButton value="most_liked" aria-label="sort by most liked">
+                <LikeIcon fontSize="small" sx={{ mr: 0.5 }} />
+                Most Liked
+              </ToggleButton>
+              <ToggleButton value="random" aria-label="sort randomly">
+                <RandomIcon fontSize="small" sx={{ mr: 0.5 }} />
+                Random
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Paper>
+        </Box>
         
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>

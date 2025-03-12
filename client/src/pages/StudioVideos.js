@@ -1,27 +1,54 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Container, Typography, Box, Grid, CircularProgress, Alert, Avatar } from '@mui/material';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
+import { 
+  Container, 
+  Typography, 
+  Box, 
+  Grid, 
+  CircularProgress, 
+  Alert, 
+  Avatar,
+  ToggleButtonGroup,
+  ToggleButton,
+  Paper
+} from '@mui/material';
+import {
+  NewReleases as NewIcon,
+  Favorite as LikeIcon,
+  Shuffle as RandomIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 import VideoCard from '../components/videos/VideoCard';
 
 const StudioVideos = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   const [videos, setVideos] = useState([]);
   const [studio, setStudio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
         setLoading(true);
         
+        // Get sort from URL query params
+        const params = new URLSearchParams(location.search);
+        const sort = params.get('sort') || 'newest';
+        
+        // Update sort state
+        setSortBy(sort);
+        
         // Get studio details
         const studioRes = await axios.get(`/api/studios/${id}`);
         setStudio(studioRes.data);
         
         // Get videos for this studio
-        const videosRes = await axios.get(`/api/videos?studio=${id}`);
+        const videosRes = await axios.get(`/api/videos?studio=${id}&sortBy=${sort}`);
         setVideos(videosRes.data.videos);
         
         setError(null);
@@ -34,7 +61,16 @@ const StudioVideos = () => {
     };
 
     fetchVideos();
-  }, [id]);
+  }, [id, location.search]);
+
+  const handleSortChange = (event, newSort) => {
+    if (newSort !== null) {
+      // Update URL with new sort
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.set('sort', newSort);
+      navigate(`/studio/${id}?${searchParams.toString()}`);
+    }
+  };
 
   if (loading) {
     return (
@@ -81,6 +117,31 @@ const StudioVideos = () => {
             </Typography>
           )}
         </Box>
+      </Box>
+      
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+        <Paper elevation={0} sx={{ display: 'flex', alignItems: 'center', p: 1, bgcolor: 'background.paper' }}>
+          <ToggleButtonGroup
+            value={sortBy}
+            exclusive
+            onChange={handleSortChange}
+            aria-label="video sorting"
+            size="small"
+          >
+            <ToggleButton value="newest" aria-label="sort by newest">
+              <NewIcon fontSize="small" sx={{ mr: 0.5 }} />
+              New
+            </ToggleButton>
+            <ToggleButton value="most_liked" aria-label="sort by most liked">
+              <LikeIcon fontSize="small" sx={{ mr: 0.5 }} />
+              Most Liked
+            </ToggleButton>
+            <ToggleButton value="random" aria-label="sort randomly">
+              <RandomIcon fontSize="small" sx={{ mr: 0.5 }} />
+              Random
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Paper>
       </Box>
       
       {videos.length === 0 ? (
