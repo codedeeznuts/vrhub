@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Card,
-  CardActionArea,
   CardMedia,
   Typography,
   Box,
@@ -135,35 +134,45 @@ const VideoCard = ({ video, onLikeToggle }) => {
             {video.title}
           </Typography>
           
-          {/* Studio Name */}
-          <Typography 
-            variant="caption" 
-            color="text.secondary" 
-            sx={{ cursor: 'pointer' }}
-            onClick={handleStudioClick}
-          >
-            {video.studio_name || 'Unknown Studio'}
-          </Typography>
-          
-          {/* Days Ago and Likes */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
-            <Typography variant="caption" color="text.secondary">
+          {/* Studio Name and Days Ago on one line */}
+          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', width: '100%' }}>
+            <Typography 
+              variant="caption" 
+              color="text.secondary" 
+              sx={{ cursor: 'pointer', flexShrink: 0 }}
+              onClick={handleStudioClick}
+            >
+              {video.studio_name || 'Unknown Studio'}
+            </Typography>
+            <Typography 
+              variant="caption" 
+              color="text.secondary" 
+              sx={{ mx: 0.5, flexShrink: 0 }}
+            >
+              •
+            </Typography>
+            <Typography 
+              variant="caption" 
+              color="text.secondary"
+              sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+            >
               {getDaysAgo()}
             </Typography>
-            
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
-                {video.likes_count || 0}
-              </Typography>
-              <IconButton 
-                size="small" 
-                color="secondary" 
-                onClick={handleLikeClick}
-                sx={{ p: 0.25 }}
-              >
-                {video.isLiked ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
-              </IconButton>
-            </Box>
+          </Box>
+          
+          {/* Likes */}
+          <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+            <IconButton 
+              size="small" 
+              color="secondary" 
+              onClick={handleLikeClick}
+              sx={{ p: 0.25, mr: 0.5 }}
+            >
+              {video.isLiked ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
+            </IconButton>
+            <Typography variant="caption" color="text.secondary">
+              {video.likes_count || 0}
+            </Typography>
           </Box>
         </Box>
       </Box>
