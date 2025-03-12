@@ -3,19 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import {
   Card,
   CardActionArea,
-  CardContent,
   CardMedia,
   Typography,
   Box,
-  Chip,
   IconButton,
-  Tooltip,
   Avatar
 } from '@mui/material';
 import {
   Favorite as FavoriteIcon,
-  FavoriteBorder as FavoriteBorderIcon,
-  AccessTime as AccessTimeIcon
+  FavoriteBorder as FavoriteBorderIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import AuthContext from '../../context/AuthContext';
@@ -34,6 +30,13 @@ const VideoCard = ({ video, onLikeToggle }) => {
 
   const handleCardClick = () => {
     navigate(`/video/${video.id}`);
+  };
+
+  const handleStudioClick = (e) => {
+    e.stopPropagation(); // Prevent card click
+    if (video.studio_id) {
+      navigate(`/studio/${video.studio_id}`);
+    }
   };
 
   const handleLikeClick = async (e) => {
@@ -72,97 +75,98 @@ const VideoCard = ({ video, onLikeToggle }) => {
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column',
-        transition: 'transform 0.2s',
-        '&:hover': {
-          transform: 'scale(1.02)',
-        },
-        borderRadius: '8px',
+        borderRadius: 0,
+        boxShadow: 'none',
+        border: 'none',
         overflow: 'hidden',
-        backgroundColor: '#1e1e1e'
+        backgroundColor: 'transparent'
       }}
     >
-      <CardActionArea onClick={handleCardClick} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
-        <Box sx={{ position: 'relative' }}>
-          <CardMedia
-            component="img"
-            height="180"
-            image={video.thumbnail_url || DEFAULT_THUMBNAIL}
-            alt={video.title}
-          />
-          <Box 
-            sx={{ 
-              position: 'absolute', 
-              bottom: 0, 
-              right: 0, 
-              bgcolor: 'rgba(0,0,0,0.7)', 
-              px: 1, 
-              py: 0.5, 
-              borderTopLeftRadius: '4px' 
-            }}
-          >
-            <Typography variant="caption" color="white">
-              {video.duration ? `${Math.floor(video.duration / 60)}:${(video.duration % 60).toString().padStart(2, '0')}` : ''}
-            </Typography>
-          </Box>
+      <Box sx={{ position: 'relative' }} onClick={handleCardClick}>
+        {/* Video Thumbnail */}
+        <CardMedia
+          component="img"
+          height="180"
+          image={video.thumbnail_url || DEFAULT_THUMBNAIL}
+          alt={video.title}
+          sx={{ cursor: 'pointer' }}
+        />
+        <Box 
+          sx={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            right: 0, 
+            bgcolor: 'rgba(0,0,0,0.7)', 
+            px: 1, 
+            py: 0.5
+          }}
+        >
+          <Typography variant="caption" color="white">
+            {video.duration ? `${Math.floor(video.duration / 60)}:${(video.duration % 60).toString().padStart(2, '0')}` : ''}
+          </Typography>
         </Box>
+      </Box>
+      
+      {/* Video Info Section */}
+      <Box sx={{ 
+        display: 'flex', 
+        bgcolor: 'transparent', 
+        p: 1,
+        alignItems: 'flex-start'
+      }}>
+        {/* Studio Avatar */}
+        <Avatar 
+          src={video.studio_logo || DEFAULT_LOGO} 
+          alt={video.studio_name || 'Studio'} 
+          sx={{ width: 48, height: 48, mr: 1, cursor: 'pointer' }}
+          onClick={handleStudioClick}
+        />
         
-        <CardContent sx={{ flexGrow: 1, p: 2 }}>
-          <Typography gutterBottom variant="subtitle1" component="div" noWrap sx={{ fontWeight: 'bold', mb: 1 }}>
+        {/* Video Details */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          {/* Title */}
+          <Typography 
+            variant="subtitle2" 
+            component="div" 
+            noWrap 
+            sx={{ fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer' }}
+            onClick={handleCardClick}
+          >
             {video.title}
           </Typography>
           
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar 
-                src={video.studio_logo || DEFAULT_LOGO} 
-                alt={video.studio_name || 'Studio'} 
-                sx={{ width: 24, height: 24, mr: 1 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (video.studio_id) navigate(`/studio/${video.studio_id}`);
-                }}
-              />
-              <Typography 
-                variant="body2" 
-                color="text.secondary" 
-                sx={{ 
-                  '&:hover': { textDecoration: 'underline', cursor: 'pointer' } 
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (video.studio_id) navigate(`/studio/${video.studio_id}`);
-                }}
-              >
-                {video.studio_name || 'Unknown Studio'}
-              </Typography>
-            </Box>
-          </Box>
+          {/* Studio Name */}
+          <Typography 
+            variant="caption" 
+            color="text.secondary" 
+            sx={{ cursor: 'pointer' }}
+            onClick={handleStudioClick}
+          >
+            {video.studio_name || 'Unknown Studio'}
+          </Typography>
           
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <AccessTimeIcon fontSize="small" sx={{ color: 'text.secondary', mr: 0.5, fontSize: '0.875rem' }} />
-              <Typography variant="caption" color="text.secondary">
-                {getDaysAgo()}
-              </Typography>
-            </Box>
+          {/* Days Ago and Likes */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
+            <Typography variant="caption" color="text.secondary">
+              {getDaysAgo()}
+            </Typography>
             
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mr: 0.5 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
                 {video.likes_count || 0}
               </Typography>
-              <Tooltip title={isAuthenticated ? (video.isLiked ? "Unlike" : "Like") : "Login to like"}>
-                <IconButton 
-                  size="small" 
-                  color="secondary" 
-                  onClick={handleLikeClick}
-                >
-                  {video.isLiked ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
-                </IconButton>
-              </Tooltip>
+              <IconButton 
+                size="small" 
+                color="secondary" 
+                onClick={handleLikeClick}
+                sx={{ p: 0.25 }}
+              >
+                {video.isLiked ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
+              </IconButton>
             </Box>
           </Box>
-        </CardContent>
-      </CardActionArea>
+        </Box>
+      </Box>
     </Card>
   );
 };
