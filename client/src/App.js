@@ -32,6 +32,19 @@ import NotFound from './pages/NotFound';
 import PrivateRoute from './components/routing/PrivateRoute';
 import AdminRoute from './components/routing/AdminRoute';
 
+// Layout component for main app routes
+const MainLayout = ({ children }) => (
+  <>
+    <Navbar />
+    <Box sx={{ display: 'flex' }}>
+      <Sidebar />
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
+        {children}
+      </Box>
+    </Box>
+  </>
+);
+
 function App() {
   return (
     <AuthProvider>
@@ -54,31 +67,16 @@ function App() {
             </Route>
             
             {/* Main App Routes */}
-            <Route path="/" element={
-              <>
-                <Navbar />
-                <Box sx={{ display: 'flex' }}>
-                  <Sidebar />
-                  <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
-                    <Routes>
-                      {/* Public Routes */}
-                      <Route index element={<Home />} />
-                      <Route path="video/:id" element={<VideoPage />} />
-                      <Route path="tag/:id" element={<TagVideos />} />
-                      <Route path="studio/:id" element={<StudioVideos />} />
-                      <Route path="search" element={<SearchResults />} />
-
-                      {/* Protected Routes */}
-                      <Route path="liked" element={<PrivateRoute><LikedVideos /></PrivateRoute>} />
-                      <Route path="profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-                      
-                      {/* 404 Route */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Box>
-                </Box>
-              </>
-            } />
+            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+            <Route path="/video/:id" element={<MainLayout><VideoPage /></MainLayout>} />
+            <Route path="/tag/:id" element={<MainLayout><TagVideos /></MainLayout>} />
+            <Route path="/studio/:id" element={<MainLayout><StudioVideos /></MainLayout>} />
+            <Route path="/search" element={<MainLayout><SearchResults /></MainLayout>} />
+            <Route path="/liked" element={<MainLayout><PrivateRoute><LikedVideos /></PrivateRoute></MainLayout>} />
+            <Route path="/profile" element={<MainLayout><PrivateRoute><Profile /></PrivateRoute></MainLayout>} />
+            
+            {/* 404 Route */}
+            <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
           </Routes>
         </Router>
       </ThemeProvider>
