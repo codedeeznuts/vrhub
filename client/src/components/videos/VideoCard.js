@@ -25,6 +25,9 @@ const VideoCard = ({ video, onLikeToggle }) => {
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  // Add console log to debug video data
+  console.log('VideoCard received video:', video);
+
   const handleCardClick = () => {
     navigate(`/video/${video.id}`);
   };

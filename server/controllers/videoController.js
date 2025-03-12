@@ -3,111 +3,29 @@ const db = require('../config/db');
 // Get all videos with pagination and optional search/filtering
 exports.getVideos = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-    const offset = (page - 1) * limit;
+    console.log('Getting videos with simplified controller...');
     
-    // Optional filters
-    const search = req.query.search;
-    const tagId = req.query.tag;
-    const studioId = req.query.studio;
+    // Simple query to get videos
+    const videosResult = await db.query(`
+      SELECT id, title, description, video_url, thumbnail_url, created_at
+      FROM videos
+      ORDER BY created_at DESC
+      LIMIT 20
+    `);
     
-    // Build query conditions
-    let conditions = [];
-    let params = [];
-    let paramIndex = 1;
-    
-    if (search) {
-      conditions.push(`(v.title ILIKE $${paramIndex} OR v.description ILIKE $${paramIndex})`);
-      params.push(`%${search}%`);
-      paramIndex++;
-    }
-    
-    if (tagId) {
-      conditions.push(`vt.tag_id = $${paramIndex}`);
-      params.push(tagId);
-      paramIndex++;
-    }
-    
-    if (studioId) {
-      conditions.push(`v.studio_id = $${paramIndex}`);
-      params.push(studioId);
-      paramIndex++;
-    }
-    
-    // Construct WHERE clause
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-    
-    // Get user ID for like status if authenticated
-    const userId = req.user ? req.user.id : null;
-    
-    // Query for videos with pagination
-    let query = `
-      SELECT v.id, v.title, v.description, v.studio_id, v.video_url, v.thumbnail_url, v.created_at,
-             s.name as studio_name,
-             COUNT(DISTINCT l.user_id) as likes_count
-             ${userId ? `, (SELECT COUNT(1) > 0 FROM likes WHERE user_id = $${paramIndex} AND video_id = v.id) as is_liked` : ''}
-      FROM videos v
-      LEFT JOIN studios s ON v.studio_id = s.id
-      LEFT JOIN likes l ON v.id = l.video_id
-      ${tagId ? 'JOIN video_tags vt ON v.id = vt.video_id' : ''}
-      ${whereClause}
-      GROUP BY v.id, s.name
-      ORDER BY v.created_at DESC
-      LIMIT $${userId ? paramIndex + 1 : paramIndex} OFFSET $${userId ? paramIndex + 2 : paramIndex + 1}
-    `;
-    
-    // Add user ID to params if authenticated
-    if (userId) {
-      params.push(userId);
-      paramIndex++;
-    }
-    
-    // Add limit and offset to params
-    params.push(limit, offset);
-    
-    const videosResult = await db.query(query, params);
-    
-    // Get tags for each video
-    const videos = await Promise.all(
-      videosResult.rows.map(async (video) => {
-        const tagsResult = await db.query(`
-          SELECT t.id, t.name
-          FROM tags t
-          JOIN video_tags vt ON t.id = vt.tag_id
-          WHERE vt.video_id = $1
-        `, [video.id]);
-        
-        return {
-          ...video,
-          tags: tagsResult.rows
-        };
-      })
-    );
-    
-    // Count total videos for pagination
-    let countQuery = `
-      SELECT COUNT(DISTINCT v.id) as total
-      FROM videos v
-      ${tagId ? 'JOIN video_tags vt ON v.id = vt.video_id' : ''}
-      ${whereClause}
-    `;
-    
-    const countResult = await db.query(countQuery, params.slice(0, paramIndex - 2));
-    const totalVideos = parseInt(countResult.rows[0].total);
-    const totalPages = Math.ceil(totalVideos / limit);
+    console.log('Found videos:', videosResult.rows.length);
     
     res.json({
-      videos,
+      videos: videosResult.rows,
       pagination: {
-        page,
-        limit,
-        totalVideos,
-        totalPages
+        page: 1,
+        totalPages: 1,
+        totalVideos: videosResult.rows.length
       }
     });
   } catch (err) {
-    console.error(err.message);
+    console.error('Error in getVideos:', err.message);
+    console.error(err.stack);
     res.status(500).send('Server error');
   }
 };

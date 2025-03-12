@@ -42,6 +42,8 @@ CREATE TABLE videos (
   studio_id INTEGER REFERENCES studios(id) ON DELETE SET NULL,
   video_url VARCHAR(255) NOT NULL,
   thumbnail_url VARCHAR(255),
+  duration INTEGER, -- Duration in seconds
+  release_date DATE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

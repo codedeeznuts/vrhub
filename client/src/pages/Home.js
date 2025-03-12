@@ -34,11 +34,34 @@ const Home = () => {
         const params = new URLSearchParams(location.search);
         const page = parseInt(params.get('page')) || 1;
         
+        console.log('Fetching videos, page:', page);
+        
+        // Add a delay to ensure the server is ready
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         const res = await axios.get('/api/videos', {
           params: { page, limit: 20 }
         });
         
-        setVideos(res.data.videos);
+        console.log('API response:', res.data);
+        
+        // Check if videos array exists
+        if (!res.data.videos) {
+          console.error('No videos array in response:', res.data);
+          setError('Invalid response from server. Please try again later.');
+          return;
+        }
+        
+        // Process videos to ensure they have tags property
+        const processedVideos = res.data.videos.map(video => ({
+          ...video,
+          tags: video.tags || [],
+          likes_count: video.likes_count || 0
+        }));
+        
+        console.log('Processed videos:', processedVideos);
+        
+        setVideos(processedVideos);
         setPagination({
           page: res.data.pagination.page,
           totalPages: res.data.pagination.totalPages,
@@ -46,6 +69,7 @@ const Home = () => {
         });
       } catch (err) {
         console.error('Error fetching videos:', err);
+        console.error('Error details:', err.response?.data || err.message);
         setError('Failed to load videos. Please try again later.');
       } finally {
         setLoading(false);
