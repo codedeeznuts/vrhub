@@ -25,6 +25,7 @@ import {
 } from '@mui/icons-material';
 import AuthContext from '../../context/AuthContext';
 import ThemeContext from '../../context/ThemeContext';
+import SettingsContext from '../../context/SettingsContext';
 
 // Styled search component
 const Search = styled('div')(({ theme }) => ({
@@ -69,6 +70,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Navbar = () => {
   const { isAuthenticated, isAdmin, user, logout } = useContext(AuthContext);
   const { darkMode, toggleTheme } = useContext(ThemeContext);
+  const { settings } = useContext(SettingsContext);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -142,7 +144,7 @@ const Navbar = () => {
               textDecoration: 'none',
             }}
           >
-            VRHub
+            {settings.siteName}
           </Typography>
 
           <form onSubmit={handleSearch} style={{ flexGrow: 1 }}>

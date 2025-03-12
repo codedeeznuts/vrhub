@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CssBaseline, Box } from '@mui/material';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { SettingsProvider } from './context/SettingsContext';
 
 // Layout Components
 import Navbar from './components/layout/Navbar';
@@ -49,36 +50,38 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <Router>
-          <CssBaseline />
-          <Routes>
-            {/* Auth Routes - Standalone without sidebar */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            {/* Admin Routes with AdminLayout */}
-            <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="videos" element={<AdminVideos />} />
-              <Route path="tags" element={<AdminTags />} />
-              <Route path="studios" element={<AdminStudios />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
-            
-            {/* Main App Routes */}
-            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-            <Route path="/video/:id" element={<MainLayout><VideoPage /></MainLayout>} />
-            <Route path="/tag/:id" element={<MainLayout><TagVideos /></MainLayout>} />
-            <Route path="/studio/:id" element={<MainLayout><StudioVideos /></MainLayout>} />
-            <Route path="/search" element={<MainLayout><SearchResults /></MainLayout>} />
-            <Route path="/liked" element={<MainLayout><PrivateRoute><LikedVideos /></PrivateRoute></MainLayout>} />
-            <Route path="/profile" element={<MainLayout><PrivateRoute><Profile /></PrivateRoute></MainLayout>} />
-            
-            {/* 404 Route */}
-            <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
-          </Routes>
-        </Router>
+        <SettingsProvider>
+          <Router>
+            <CssBaseline />
+            <Routes>
+              {/* Auth Routes - Standalone without sidebar */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Admin Routes with AdminLayout */}
+              <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="videos" element={<AdminVideos />} />
+                <Route path="tags" element={<AdminTags />} />
+                <Route path="studios" element={<AdminStudios />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
+              
+              {/* Main App Routes */}
+              <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+              <Route path="/video/:id" element={<MainLayout><VideoPage /></MainLayout>} />
+              <Route path="/tag/:id" element={<MainLayout><TagVideos /></MainLayout>} />
+              <Route path="/studio/:id" element={<MainLayout><StudioVideos /></MainLayout>} />
+              <Route path="/search" element={<MainLayout><SearchResults /></MainLayout>} />
+              <Route path="/liked" element={<MainLayout><PrivateRoute><LikedVideos /></PrivateRoute></MainLayout>} />
+              <Route path="/profile" element={<MainLayout><PrivateRoute><Profile /></PrivateRoute></MainLayout>} />
+              
+              {/* 404 Route */}
+              <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
+            </Routes>
+          </Router>
+        </SettingsProvider>
       </ThemeProvider>
     </AuthProvider>
   );

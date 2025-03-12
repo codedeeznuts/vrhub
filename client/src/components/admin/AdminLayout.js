@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Outlet, Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -34,6 +34,7 @@ import {
   AccountCircle
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
+import SettingsContext from '../../context/SettingsContext';
 
 const drawerWidth = 240;
 
@@ -44,6 +45,7 @@ const AdminLayout = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { settings } = useContext(SettingsContext);
   
   // User menu
   const [anchorEl, setAnchorEl] = useState(null);
@@ -130,7 +132,7 @@ const AdminLayout = () => {
               fontWeight: 'bold'
             }}
           >
-            VR Hub Admin
+            {settings.siteName} Admin
           </Typography>
           
           {/* User menu */}
