@@ -3,30 +3,172 @@ const db = require('../config/db');
 // Get all videos with pagination and optional search/filtering
 exports.getVideos = async (req, res) => {
   try {
-    console.log('Getting videos with simplified controller...');
+    console.log('Getting videos with full functionality...');
     
-    // Simple query to get videos
-    const videosResult = await db.query(`
-      SELECT id, title, description, video_url, thumbnail_url, created_at
-      FROM videos
-      ORDER BY created_at DESC
-      LIMIT 20
-    `);
+    // Get pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
     
-    console.log('Found videos:', videosResult.rows.length);
+    // Get optional filters
+    const search = req.query.search;
+    const tagId = req.query.tag;
+    const studioId = req.query.studio;
+    const sortBy = req.query.sort || 'newest'; // Default sort is newest
     
+    // Get user ID if authenticated
+    const userId = req.user ? req.user.id : null;
+    
+    console.log('Filters:', { search, tagId, studioId, sortBy, page, limit, userId });
+    
+    // Build query conditions
+    const conditions = [];
+    const params = [];
+    let paramIndex = 1;
+    
+    if (search) {
+      conditions.push(`(v.title ILIKE $${paramIndex} OR v.description ILIKE $${paramIndex})`);
+      params.push(`%${search}%`);
+      paramIndex++;
+    }
+    
+    if (studioId) {
+      conditions.push(`v.studio_id = $${paramIndex}`);
+      params.push(studioId);
+      paramIndex++;
+    }
+    
+    // Build the base query
+    let query = `
+      SELECT v.*, s.name as studio_name, 
+      COUNT(DISTINCT l.user_id) as likes_count
+      ${userId ? `, (SELECT COUNT(1) > 0 FROM likes WHERE user_id = $${paramIndex} AND video_id = v.id) as is_liked` : ''}
+      FROM videos v
+      LEFT JOIN studios s ON v.studio_id = s.id
+      LEFT JOIN likes l ON v.id = l.video_id
+    `;
+    
+    // Add tag filter if provided
+    if (tagId) {
+      query += ` JOIN video_tags vt ON v.id = vt.video_id AND vt.tag_id = $${paramIndex}`;
+      params.push(tagId);
+      paramIndex++;
+    }
+    
+    // Add WHERE clause if there are conditions
+    if (conditions.length > 0) {
+      query += ` WHERE ${conditions.join(' AND ')}`;
+    }
+    
+    // Add GROUP BY
+    query += ` GROUP BY v.id, s.name`;
+    
+    // Add ORDER BY based on sortBy parameter
+    switch (sortBy) {
+      case 'oldest':
+        query += ` ORDER BY v.created_at ASC`;
+        break;
+      case 'most_liked':
+        query += ` ORDER BY likes_count DESC, v.created_at DESC`;
+        break;
+      case 'title':
+        query += ` ORDER BY v.title ASC`;
+        break;
+      case 'newest':
+      default:
+        query += ` ORDER BY v.created_at DESC`;
+        break;
+    }
+    
+    // Add pagination
+    query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    
+    // Add user ID to params if authenticated
+    if (userId) {
+      params.push(userId);
+      paramIndex++;
+    }
+    
+    // Add limit and offset to params
+    params.push(limit, offset);
+    
+    // Log the query and params for debugging
+    console.log('Query:', query);
+    console.log('Params:', params);
+    
+    // Execute the query
+    const videosResult = await db.query(query, params);
+    console.log('Videos result rows:', videosResult.rows.length);
+    
+    // Get tags for each video
+    const videos = await Promise.all(
+      videosResult.rows.map(async (video) => {
+        try {
+          const tagsResult = await db.query(`
+            SELECT t.id, t.name
+            FROM tags t
+            JOIN video_tags vt ON t.id = vt.tag_id
+            WHERE vt.video_id = $1
+          `, [video.id]);
+          
+          return {
+            ...video,
+            tags: tagsResult.rows
+          };
+        } catch (err) {
+          console.error('Error getting tags for video:', err);
+          return {
+            ...video,
+            tags: []
+          };
+        }
+      })
+    );
+    
+    // Count total videos for pagination
+    let countQuery = `
+      SELECT COUNT(DISTINCT v.id) as total
+      FROM videos v
+    `;
+    
+    // Add tag filter if provided
+    if (tagId) {
+      countQuery += ` JOIN video_tags vt ON v.id = vt.video_id AND vt.tag_id = $1`;
+      const countParams = [tagId];
+      
+      // Add WHERE clause if there are conditions
+      if (conditions.length > 0) {
+        countQuery += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      
+      const countResult = await db.query(countQuery, countParams);
+      var totalVideos = parseInt(countResult.rows[0].total);
+    } else {
+      // Add WHERE clause if there are conditions
+      if (conditions.length > 0) {
+        countQuery += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      
+      const countResult = await db.query(countQuery, params.slice(0, conditions.length));
+      var totalVideos = parseInt(countResult.rows[0].total);
+    }
+    
+    const totalPages = Math.ceil(totalVideos / limit);
+    console.log('Total videos:', totalVideos, 'Total pages:', totalPages);
+    
+    // Return the videos with pagination info
     res.json({
-      videos: videosResult.rows,
+      videos,
       pagination: {
-        page: 1,
-        totalPages: 1,
-        totalVideos: videosResult.rows.length
+        page,
+        limit,
+        totalVideos,
+        totalPages
       }
     });
   } catch (err) {
-    console.error('Error in getVideos:', err.message);
-    console.error(err.stack);
-    res.status(500).send('Server error');
+    console.error('Error in getVideos:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
