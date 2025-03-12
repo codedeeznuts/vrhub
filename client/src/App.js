@@ -51,11 +51,11 @@ function App() {
             
             {/* Main App Routes */}
             <Route path="/" element={
-              <>
+              <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                 <Navbar />
-                <Box sx={{ display: 'flex' }}>
+                <Box sx={{ display: 'flex', flexGrow: 1 }}>
                   <Sidebar />
-                  <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
+                  <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                     <Routes>
                       {/* Public Routes */}
                       <Route index element={<Home />} />
@@ -75,7 +75,7 @@ function App() {
                     </Routes>
                   </Box>
                 </Box>
-              </>
+              </Box>
             } />
           </Routes>
         </Router>

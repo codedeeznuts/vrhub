@@ -11,7 +11,8 @@ import {
   Divider,
   Typography,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Toolbar
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -81,7 +82,7 @@ const Sidebar = () => {
   // Sidebar content
   const sidebarContent = (
     <>
-      <Box sx={{ overflow: 'auto', mt: 8 }}>
+      <Box sx={{ overflow: 'auto' }}>
         <List>
           <ListItem disablePadding>
             <ListItemButton
