@@ -64,7 +64,18 @@ const Users = () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/users');
-      setUsers(response.data);
+      
+      // Map database field names to component field names
+      const mappedUsers = response.data.map(user => ({
+        _id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.is_admin ? 'admin' : 'user',
+        isActive: user.is_active,
+        createdAt: user.created_at
+      }));
+      
+      setUsers(mappedUsers);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch users');
@@ -120,9 +131,15 @@ const Users = () => {
   };
 
   const handleOpenEditDialog = (user) => {
-    // Don't include password in edit form
-    const { password, ...userWithoutPassword } = user;
-    setCurrentUser({ ...userWithoutPassword, password: '' });
+    // Map user fields for the edit form
+    setCurrentUser({
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      isActive: user.isActive,
+      password: '' // Don't include password in edit form
+    });
     setFormErrors({});
     setOpenEditDialog(true);
   };
@@ -143,7 +160,15 @@ const Users = () => {
     
     try {
       setLoading(true);
-      await axios.post('/api/users', currentUser);
+      const dataToSend = {
+        email: currentUser.email,
+        password: currentUser.password,
+        name: currentUser.name,
+        is_admin: currentUser.role === 'admin',
+        is_active: currentUser.isActive
+      };
+      
+      await axios.post('/api/users', dataToSend);
       await fetchUsers();
       handleCloseDialogs();
       setSnackbar({
@@ -170,9 +195,15 @@ const Users = () => {
     try {
       setLoading(true);
       // Only send password if it was changed
-      const dataToSend = { ...currentUser };
-      if (!dataToSend.password) {
-        delete dataToSend.password;
+      const dataToSend = { 
+        email: currentUser.email,
+        name: currentUser.name,
+        is_admin: currentUser.role === 'admin',
+        is_active: currentUser.isActive
+      };
+      
+      if (currentUser.password) {
+        dataToSend.password = currentUser.password;
       }
       
       await axios.put(`/api/users/${currentUser._id}`, dataToSend);
@@ -225,6 +256,8 @@ const Users = () => {
   };
 
   const getInitials = (name) => {
+    if (!name) return ''; // Return empty string if name is null or undefined
+    
     return name
       .split(' ')
       .map(part => part[0])
@@ -288,26 +321,26 @@ const Users = () => {
                           <Avatar sx={{ mr: 2, bgcolor: user.role === 'admin' ? 'secondary.main' : 'primary.main' }}>
                             {user.role === 'admin' ? <AdminPanelSettings /> : getInitials(user.name)}
                           </Avatar>
-                          <Typography>{user.name}</Typography>
+                          <Typography>{user.name || 'Unnamed User'}</Typography>
                         </Box>
                       </TableCell>
-                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{user.email || 'No Email'}</TableCell>
                       <TableCell>
                         <Chip 
-                          label={user.role.charAt(0).toUpperCase() + user.role.slice(1)} 
+                          label={(user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User')} 
                           color={user.role === 'admin' ? 'secondary' : 'default'}
                           size="small"
                         />
                       </TableCell>
                       <TableCell>
                         <Chip 
-                          label={user.isActive ? 'Active' : 'Inactive'} 
-                          color={user.isActive ? 'success' : 'error'}
+                          label={user.isActive !== false ? 'Active' : 'Inactive'} 
+                          color={user.isActive !== false ? 'success' : 'error'}
                           size="small"
                         />
                       </TableCell>
                       <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
                       </TableCell>
                       <TableCell align="right">
                         <IconButton 
