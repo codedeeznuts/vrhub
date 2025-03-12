@@ -132,7 +132,7 @@ const Home = () => {
     <Container maxWidth="xl">
       <Box sx={{ mt: 2, mb: 4 }}>
         <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          VR Porn Videos Top Rated
+          Featured Videos
         </Typography>
         
         {/* Full width filter bar */}
