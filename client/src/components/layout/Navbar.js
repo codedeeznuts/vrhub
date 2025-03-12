@@ -195,8 +195,8 @@ const Navbar = () => {
                     Admin Dashboard
                   </MenuItem>
                 )}
-                <MenuItem onClick={() => { handleMenuClose(); navigate('/liked'); }}>
-                  Liked Videos
+                <MenuItem onClick={() => { handleMenuClose(); navigate('/profile'); }}>
+                  Profile
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
@@ -242,8 +242,8 @@ const Navbar = () => {
           <MenuItem key="admin" onClick={() => { setMobileMenuAnchorEl(null); navigate('/admin'); }}>
             Admin Dashboard
           </MenuItem>,
-          <MenuItem key="liked" onClick={() => { setMobileMenuAnchorEl(null); navigate('/liked'); }}>
-            Liked Videos
+          <MenuItem key="profile" onClick={() => { setMobileMenuAnchorEl(null); navigate('/profile'); }}>
+            Profile
           </MenuItem>,
           <MenuItem key="logout" onClick={() => { setMobileMenuAnchorEl(null); logout(); navigate('/'); }}>
             Logout
