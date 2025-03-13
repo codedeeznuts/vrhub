@@ -211,7 +211,7 @@ const VideoPage = () => {
             </Box>
             
             {/* Video Description and Tags */}
-            <Paper sx={{ p: 2, mb: 3 }}>
+            <Paper sx={{ p: 2, boxShadow: 'none', border: '1px solid #e0e0e0', borderRadius: 0 }}>
               {/* Description */}
               <Typography variant="body1" paragraph>
                 {video.description || 'No description available.'}
@@ -283,7 +283,7 @@ const VideoPage = () => {
         </Grid>
         
         {/* Related Videos Section - Full Width */}
-        <Box sx={{ mt: 4, border: '1px solid #e0e0e0', p: 2 }}>
+        <Box sx={{ mt: 2 }}>
           <Typography variant="h6" gutterBottom>
             Related Videos
           </Typography>
