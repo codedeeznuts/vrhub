@@ -198,7 +198,7 @@ const VideoPage = () => {
               {/* Views and Likes */}
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {/* Views */}
-                <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
                   <VisibilityIcon sx={{ color: 'text.secondary', fontSize: '1.2rem', mr: 0.5 }} />
                   <Typography variant="body2" color="text.secondary">
                     {formatViewCount(video.views || 0)}
@@ -206,16 +206,15 @@ const VideoPage = () => {
                 </Box>
                 
                 {/* Like Button */}
-                <IconButton 
-                  onClick={handleLikeToggle} 
-                  color="secondary"
-                  aria-label={video.isLiked ? "Unlike" : "Like"}
-                >
-                  {video.isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                </IconButton>
-                <Typography variant="body2" color="text.secondary">
-                  {video.likes_count || 0}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={handleLikeToggle}>
+                  {video.isLiked ? 
+                    <FavoriteIcon sx={{ color: 'secondary.main', fontSize: '1.2rem', mr: 0.5 }} /> : 
+                    <FavoriteBorderIcon sx={{ color: 'text.secondary', fontSize: '1.2rem', mr: 0.5 }} />
+                  }
+                  <Typography variant="body2" color="text.secondary">
+                    {video.likes_count || 0}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
             

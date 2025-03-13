@@ -189,7 +189,7 @@ const VideoCard = ({ video, onLikeToggle }) => {
           {/* Views and Likes */}
           <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
             {/* Views */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
               <VisibilityIcon fontSize="small" sx={{ color: 'text.secondary', fontSize: '1rem', mr: 0.5 }} />
               <Typography variant="caption" color="text.secondary">
                 {formatViewCount(video.views || 0)}
@@ -197,17 +197,15 @@ const VideoCard = ({ video, onLikeToggle }) => {
             </Box>
             
             {/* Likes */}
-            <IconButton 
-              size="small" 
-              color="secondary" 
-              onClick={handleLikeClick}
-              sx={{ p: 0.25, mr: 0.5 }}
-            >
-              {video.isLiked ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
-            </IconButton>
-            <Typography variant="caption" color="text.secondary">
-              {video.likes_count || 0}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={handleLikeClick}>
+              {video.isLiked ? 
+                <FavoriteIcon fontSize="small" sx={{ color: 'secondary.main', fontSize: '1rem', mr: 0.5 }} /> : 
+                <FavoriteBorderIcon fontSize="small" sx={{ color: 'text.secondary', fontSize: '1rem', mr: 0.5 }} />
+              }
+              <Typography variant="caption" color="text.secondary">
+                {video.likes_count || 0}
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>
