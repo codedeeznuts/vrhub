@@ -86,7 +86,7 @@ const VideoPage = () => {
         }
         
         const relatedRes = await axios.get('/api/videos', {
-          params: { ...relatedParams, limit: 4 }
+          params: { ...relatedParams, limit: 16 }
         });
         
         // Filter out the current video
@@ -211,7 +211,7 @@ const VideoPage = () => {
             </Box>
             
             {/* Video Description and Tags */}
-            <Paper sx={{ p: 2, boxShadow: 'none', border: '1px solid #e0e0e0', borderRadius: 0 }}>
+            <Paper sx={{ p: 2, boxShadow: 'none', borderRadius: 0, border: '1px solid', borderColor: 'divider' }}>
               {/* Description */}
               <Typography variant="body1" paragraph>
                 {video.description || 'No description available.'}
@@ -271,7 +271,7 @@ const VideoPage = () => {
           
           {/* Right Column - Placeholder for future content */}
           <Grid item xs={12} md={3}>
-            <Paper sx={{ p: 2, height: '100%', border: '1px solid #e0e0e0', boxShadow: 'none' }}>
+            <Paper sx={{ p: 2, height: '100%', boxShadow: 'none', border: '1px solid', borderColor: 'divider' }}>
               <Typography variant="h6" gutterBottom>
                 Additional Content
               </Typography>
@@ -290,7 +290,7 @@ const VideoPage = () => {
           {relatedVideos.length > 0 ? (
             <Grid container spacing={2}>
               {relatedVideos.map(relatedVideo => (
-                <Grid item xs={12} sm={6} md={3} key={relatedVideo.id}>
+                <Grid item xs={12} sm={6} md={4} lg={3} key={relatedVideo.id}>
                   <VideoCard video={relatedVideo} />
                 </Grid>
               ))}

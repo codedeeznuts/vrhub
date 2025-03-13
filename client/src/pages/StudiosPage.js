@@ -102,7 +102,8 @@ const StudiosPage = () => {
                       flexDirection: 'column',
                       cursor: 'pointer',
                       boxShadow: 'none',
-                      border: '1px solid #e0e0e0'
+                      border: '1px solid',
+                      borderColor: 'divider'
                     }}
                     onClick={() => handleStudioClick(studio)}
                   >
