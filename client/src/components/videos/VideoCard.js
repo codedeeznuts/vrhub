@@ -34,8 +34,9 @@ const VideoCard = ({ video, onLikeToggle }) => {
 
   const handleStudioClick = (e) => {
     e.stopPropagation(); // Prevent card click
-    if (video.studio_id) {
-      navigate(`/studio/${video.studio_id}`);
+    if (video.studio_name) {
+      const formattedStudioName = video.studio_name.toLowerCase().replace(/\s+/g, '-');
+      navigate(`/studio/${formattedStudioName}`);
     }
   };
 

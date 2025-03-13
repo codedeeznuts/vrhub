@@ -71,8 +71,8 @@ function App() {
               {/* Main App Routes */}
               <Route path="/" element={<MainLayout><Home /></MainLayout>} />
               <Route path="/video/:id" element={<MainLayout><VideoPage /></MainLayout>} />
-              <Route path="/tag/:id" element={<MainLayout><TagVideos /></MainLayout>} />
-              <Route path="/studio/:id" element={<MainLayout><StudioVideos /></MainLayout>} />
+              <Route path="/tag/:name" element={<MainLayout><TagVideos /></MainLayout>} />
+              <Route path="/studio/:name" element={<MainLayout><StudioVideos /></MainLayout>} />
               <Route path="/search" element={<MainLayout><SearchResults /></MainLayout>} />
               <Route path="/liked" element={<MainLayout><PrivateRoute><LikedVideos /></PrivateRoute></MainLayout>} />
               <Route path="/profile" element={<MainLayout><PrivateRoute><Profile /></PrivateRoute></MainLayout>} />

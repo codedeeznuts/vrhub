@@ -8,10 +8,10 @@ const { auth, admin } = require('../middleware/auth');
 // @access  Public
 router.get('/', tagController.getTags);
 
-// @route   GET api/tags/:id
-// @desc    Get a single tag by ID
+// @route   GET api/tags/:name
+// @desc    Get a single tag by name
 // @access  Public
-router.get('/:id', tagController.getTagById);
+router.get('/:name', tagController.getTagByName);
 
 // @route   POST api/tags
 // @desc    Create a new tag

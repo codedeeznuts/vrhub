@@ -112,7 +112,7 @@ const Sidebar = () => {
               {tags.map((tag) => (
                 <ListItem key={tag.id} disablePadding>
                   <ListItemButton
-                    onClick={() => handleNavigation(`/tag/${tag.id}`, 'tags')}
+                    onClick={() => handleNavigation(`/tag/${tag.name.toLowerCase().replace(/\s+/g, '-')}`, 'tags')}
                     sx={{ py: 0.5 }}
                   >
                     <ListItemText primary={tag.name} />
@@ -139,7 +139,7 @@ const Sidebar = () => {
               {studios.map((studio) => (
                 <ListItem key={studio.id} disablePadding>
                   <ListItemButton
-                    onClick={() => handleNavigation(`/studio/${studio.id}`, 'studios')}
+                    onClick={() => handleNavigation(`/studio/${studio.name.toLowerCase().replace(/\s+/g, '-')}`, 'studios')}
                     sx={{ py: 0.5 }}
                   >
                     <ListItemText primary={studio.name} />

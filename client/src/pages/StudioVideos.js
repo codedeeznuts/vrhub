@@ -21,7 +21,7 @@ import axios from 'axios';
 import VideoCard from '../components/videos/VideoCard';
 
 const StudioVideos = () => {
-  const { id } = useParams();
+  const { name } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -43,12 +43,13 @@ const StudioVideos = () => {
         // Update sort state
         setSortBy(sort);
         
-        // Get studio details
-        const studioRes = await axios.get(`/api/studios/${id}`);
+        // Get studio details - try to find by formatted name first
+        const formattedName = name.replace(/-/g, ' ');
+        const studioRes = await axios.get(`/api/studios/${formattedName}`);
         setStudio(studioRes.data);
         
         // Get videos for this studio
-        const videosRes = await axios.get(`/api/videos?studio=${id}&sort=${sort}`);
+        const videosRes = await axios.get(`/api/videos?studio=${studioRes.data.id}&sort=${sort}`);
         setVideos(videosRes.data.videos);
         
         setError(null);
@@ -61,14 +62,11 @@ const StudioVideos = () => {
     };
 
     fetchVideos();
-  }, [id, location.search]);
+  }, [name, location.search]);
 
   const handleSortChange = (event, newSort) => {
-    if (newSort !== null) {
-      // Update URL with new sort
-      const searchParams = new URLSearchParams(location.search);
-      searchParams.set('sort', newSort);
-      navigate(`/studio/${id}?${searchParams.toString()}`);
+    if (newSort) {
+      navigate(`/studio/${name}?sort=${newSort}`);
     }
   };
 

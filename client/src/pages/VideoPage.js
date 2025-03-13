@@ -44,8 +44,10 @@ const VideoPage = () => {
         // Get related videos (same tags or studio)
         let relatedParams = {};
         if (res.data.tags && res.data.tags.length > 0) {
+          // Use tag ID for API call since that's what the backend expects
           relatedParams.tag = res.data.tags[0].id;
         } else if (res.data.studio_id) {
+          // Use studio ID for API call since that's what the backend expects
           relatedParams.studio = res.data.studio_id;
         }
         
@@ -128,7 +130,7 @@ const VideoPage = () => {
                     label={video.studio_name}
                     color="primary"
                     variant="outlined"
-                    onClick={() => navigate(`/studio/${video.studio_id}`)}
+                    onClick={() => navigate(`/studio/${video.studio_name.toLowerCase().replace(/\s+/g, '-')}`)}
                     sx={{ mr: 1 }}
                   />
                 )}
@@ -170,7 +172,7 @@ const VideoPage = () => {
                     key={tag.id}
                     label={tag.name}
                     size="small"
-                    onClick={() => navigate(`/tag/${tag.id}`)}
+                    onClick={() => navigate(`/tag/${tag.name.toLowerCase().replace(/\s+/g, '-')}`)}
                   />
                 ))}
               </Box>

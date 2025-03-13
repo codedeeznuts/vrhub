@@ -8,10 +8,10 @@ const { auth, admin } = require('../middleware/auth');
 // @access  Public
 router.get('/', studioController.getStudios);
 
-// @route   GET api/studios/:id
-// @desc    Get a single studio by ID
+// @route   GET api/studios/:name
+// @desc    Get a single studio by name
 // @access  Public
-router.get('/:id', studioController.getStudioById);
+router.get('/:name', studioController.getStudioByName);
 
 // @route   POST api/studios
 // @desc    Create a new studio

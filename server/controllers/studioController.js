@@ -11,11 +11,29 @@ exports.getStudios = async (req, res) => {
   }
 };
 
-// Get a single studio by ID
+// Get a single studio by ID (keeping for backward compatibility)
 exports.getStudioById = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await db.query('SELECT * FROM studios WHERE id = $1', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ msg: 'Studio not found' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
+
+// Get a single studio by name
+exports.getStudioByName = async (req, res) => {
+  try {
+    const { name } = req.params;
+    // Use case-insensitive search
+    const result = await db.query('SELECT * FROM studios WHERE LOWER(name) = LOWER($1)', [name]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ msg: 'Studio not found' });
