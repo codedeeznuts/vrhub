@@ -80,9 +80,10 @@ const VideoCard = ({ video, onLikeToggle }) => {
         boxShadow: 'none',
         border: 'none',
         overflow: 'hidden',
-        backgroundColor: 'transparent',
+        backgroundColor: 'transparent !important',
         m: 0
       }}
+      elevation={0}
     >
       <Box sx={{ position: 'relative', width: '100%', paddingTop: '56.25%' }} onClick={handleCardClick}>
         {/* Video Thumbnail */}
@@ -121,7 +122,9 @@ const VideoCard = ({ video, onLikeToggle }) => {
         display: 'flex', 
         bgcolor: 'transparent', 
         p: 0.5,
-        alignItems: 'flex-start'
+        pt: 1.5,
+        alignItems: 'flex-start',
+        backgroundColor: 'transparent !important'
       }}>
         {/* Studio Avatar */}
         <Avatar 

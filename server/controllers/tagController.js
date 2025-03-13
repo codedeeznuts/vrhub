@@ -48,7 +48,7 @@ exports.getTagByName = async (req, res) => {
 
 // Create a new tag
 exports.createTag = async (req, res) => {
-  const { name } = req.body;
+  const { name, thumbnail_url } = req.body;
   
   if (!name) {
     return res.status(400).json({ msg: 'Tag name is required' });
@@ -63,8 +63,8 @@ exports.createTag = async (req, res) => {
     }
     
     const result = await db.query(
-      'INSERT INTO tags (name) VALUES ($1) RETURNING *',
-      [name]
+      'INSERT INTO tags (name, thumbnail_url) VALUES ($1, $2) RETURNING *',
+      [name, thumbnail_url || null]
     );
     
     res.status(201).json(result.rows[0]);
@@ -77,7 +77,7 @@ exports.createTag = async (req, res) => {
 // Update a tag
 exports.updateTag = async (req, res) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name, thumbnail_url } = req.body;
   
   if (!name) {
     return res.status(400).json({ msg: 'Tag name is required' });
@@ -102,8 +102,8 @@ exports.updateTag = async (req, res) => {
     }
     
     const result = await db.query(
-      'UPDATE tags SET name = $1 WHERE id = $2 RETURNING *',
-      [name, id]
+      'UPDATE tags SET name = $1, thumbnail_url = $2 WHERE id = $3 RETURNING *',
+      [name, thumbnail_url || tagCheck.rows[0].thumbnail_url, id]
     );
     
     res.json(result.rows[0]);

@@ -61,9 +61,9 @@ const Sidebar = () => {
     const path = location.pathname;
     if (path === '/') {
       setActiveTab('videos');
-    } else if (path.startsWith('/tag/')) {
+    } else if (path.startsWith('/tag/') || path === '/tags') {
       setActiveTab('tags');
-    } else if (path.startsWith('/studio/')) {
+    } else if (path.startsWith('/studio/') || path === '/studios') {
       setActiveTab('studios');
     } else if (path === '/liked') {
       setActiveTab('liked');
@@ -98,7 +98,7 @@ const Sidebar = () => {
           <ListItem disablePadding>
             <ListItemButton
               selected={activeTab === 'tags'}
-              onClick={() => setActiveTab('tags')}
+              onClick={() => handleNavigation('/tags', 'tags')}
             >
               <ListItemIcon>
                 <TagIcon />
@@ -107,25 +107,10 @@ const Sidebar = () => {
             </ListItemButton>
           </ListItem>
 
-          {activeTab === 'tags' && (
-            <Box sx={{ pl: 4 }}>
-              {tags.map((tag) => (
-                <ListItem key={tag.id} disablePadding>
-                  <ListItemButton
-                    onClick={() => handleNavigation(`/tag/${tag.name.toLowerCase().replace(/\s+/g, '-')}`, 'tags')}
-                    sx={{ py: 0.5 }}
-                  >
-                    <ListItemText primary={tag.name} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </Box>
-          )}
-
           <ListItem disablePadding>
             <ListItemButton
               selected={activeTab === 'studios'}
-              onClick={() => setActiveTab('studios')}
+              onClick={() => handleNavigation('/studios', 'studios')}
             >
               <ListItemIcon>
                 <StudioIcon />
@@ -133,21 +118,6 @@ const Sidebar = () => {
               <ListItemText primary="Studios" />
             </ListItemButton>
           </ListItem>
-
-          {activeTab === 'studios' && (
-            <Box sx={{ pl: 4 }}>
-              {studios.map((studio) => (
-                <ListItem key={studio.id} disablePadding>
-                  <ListItemButton
-                    onClick={() => handleNavigation(`/studio/${studio.name.toLowerCase().replace(/\s+/g, '-')}`, 'studios')}
-                    sx={{ py: 0.5 }}
-                  >
-                    <ListItemText primary={studio.name} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </Box>
-          )}
 
           {isAuthenticated && (
             <ListItem disablePadding>

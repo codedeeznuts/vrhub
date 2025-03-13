@@ -19,6 +19,8 @@ import StudioVideos from './pages/StudioVideos';
 import LikedVideos from './pages/LikedVideos';
 import SearchResults from './pages/SearchResults';
 import Profile from './pages/Profile';
+import TagsPage from './pages/TagsPage';
+import StudiosPage from './pages/StudiosPage';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -71,7 +73,9 @@ function App() {
               {/* Main App Routes */}
               <Route path="/" element={<MainLayout><Home /></MainLayout>} />
               <Route path="/video/:id" element={<MainLayout><VideoPage /></MainLayout>} />
+              <Route path="/tags" element={<MainLayout><TagsPage /></MainLayout>} />
               <Route path="/tag/:name" element={<MainLayout><TagVideos /></MainLayout>} />
+              <Route path="/studios" element={<MainLayout><StudiosPage /></MainLayout>} />
               <Route path="/studio/:name" element={<MainLayout><StudioVideos /></MainLayout>} />
               <Route path="/search" element={<MainLayout><SearchResults /></MainLayout>} />
               <Route path="/liked" element={<MainLayout><PrivateRoute><LikedVideos /></PrivateRoute></MainLayout>} />

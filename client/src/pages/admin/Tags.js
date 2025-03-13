@@ -34,7 +34,11 @@ const Tags = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [currentTag, setCurrentTag] = useState({ name: '', description: '' });
+  const [currentTag, setCurrentTag] = useState({
+    name: '',
+    description: '',
+    thumbnail_url: ''
+  });
   const [formErrors, setFormErrors] = useState({});
   
   // Snackbar notification
@@ -83,7 +87,7 @@ const Tags = () => {
   };
 
   const handleOpenAddDialog = () => {
-    setCurrentTag({ name: '', description: '' });
+    setCurrentTag({ name: '', description: '', thumbnail_url: '' });
     setFormErrors({});
     setOpenAddDialog(true);
   };
@@ -218,6 +222,7 @@ const Tags = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
+                  <TableCell>Thumbnail</TableCell>
                   <TableCell>Description</TableCell>
                   <TableCell>Videos Count</TableCell>
                   <TableCell align="right">Actions</TableCell>
@@ -234,6 +239,18 @@ const Tags = () => {
                   tags.map((tag) => (
                     <TableRow key={tag._id}>
                       <TableCell>{tag.name}</TableCell>
+                      <TableCell>
+                        {tag.thumbnail_url ? (
+                          <Box
+                            component="img"
+                            src={tag.thumbnail_url}
+                            alt={tag.name}
+                            sx={{ height: 40, width: 'auto', borderRadius: 1 }}
+                          />
+                        ) : (
+                          'No thumbnail'
+                        )}
+                      </TableCell>
                       <TableCell>{tag.description || '-'}</TableCell>
                       <TableCell>{tag.videosCount || 0}</TableCell>
                       <TableCell align="right">
@@ -281,6 +298,18 @@ const Tags = () => {
           />
           <TextField
             margin="dense"
+            name="thumbnail_url"
+            label="Thumbnail URL"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={currentTag.thumbnail_url}
+            onChange={handleInputChange}
+            helperText="URL to an image that represents this tag"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            margin="dense"
             name="description"
             label="Description (Optional)"
             type="text"
@@ -322,6 +351,18 @@ const Tags = () => {
             error={!!formErrors.name}
             helperText={formErrors.name}
             sx={{ mb: 2, mt: 1 }}
+          />
+          <TextField
+            margin="dense"
+            name="thumbnail_url"
+            label="Thumbnail URL"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={currentTag.thumbnail_url}
+            onChange={handleInputChange}
+            helperText="URL to an image that represents this tag"
+            sx={{ mb: 2 }}
           />
           <TextField
             margin="dense"
