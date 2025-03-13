@@ -11,7 +11,8 @@ import {
   Alert,
   Paper,
   Grid,
-  Avatar
+  Avatar,
+  Button
 } from '@mui/material';
 import {
   Favorite as FavoriteIcon,
@@ -275,6 +276,17 @@ const VideoPage = () => {
               <Typography variant="h6" gutterBottom>
                 Additional Content
               </Typography>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                fullWidth 
+                sx={{ mb: 2 }}
+                href={video.video_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download Full Video
+              </Button>
               <Typography variant="body2" color="text.secondary">
                 This space is reserved for future content.
               </Typography>

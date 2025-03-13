@@ -160,10 +160,6 @@ const Home = () => {
           </Alert>
         ) : (
           <>
-            <Typography variant="body1" color="text.secondary" gutterBottom>
-              Showing {videos.length} of {pagination.totalVideos} videos
-            </Typography>
-            
             <Grid container spacing={1.5} key={`video-grid-${sortBy}`}>
               {videos.map((video) => (
                 <Grid item key={video.id} xs={12} sm={6} md={4} lg={3}>

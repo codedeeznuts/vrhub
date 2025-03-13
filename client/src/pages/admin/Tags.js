@@ -252,7 +252,7 @@ const Tags = () => {
                         )}
                       </TableCell>
                       <TableCell>{tag.description || '-'}</TableCell>
-                      <TableCell>{tag.videosCount || 0}</TableCell>
+                      <TableCell>{tag.video_count || 0}</TableCell>
                       <TableCell align="right">
                         <IconButton 
                           color="primary" 
@@ -396,9 +396,9 @@ const Tags = () => {
         <DialogContent>
           <DialogContentText>
             Are you sure you want to delete the tag "{currentTag.name}"? This action cannot be undone.
-            {currentTag.videosCount > 0 && (
+            {currentTag.video_count > 0 && (
               <Box component="span" sx={{ display: 'block', mt: 1, color: 'error.main' }}>
-                Warning: This tag is used in {currentTag.videosCount} videos. Deleting it will remove the tag from those videos.
+                Warning: This tag is used in {currentTag.video_count} videos. Deleting it will remove the tag from those videos.
               </Box>
             )}
           </DialogContentText>

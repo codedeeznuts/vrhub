@@ -81,7 +81,15 @@ const Sidebar = () => {
   // Sidebar content
   const sidebarContent = (
     <>
-      <Box sx={{ overflow: 'auto', mt: 8 }}>
+      <Box sx={{ 
+        overflow: 'auto', 
+        mt: 8,
+        '&::-webkit-scrollbar': {
+          display: 'none'
+        },
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none'
+      }}>
         <List>
           <ListItem disablePadding>
             <ListItemButton
@@ -132,6 +140,40 @@ const Sidebar = () => {
               </ListItemButton>
             </ListItem>
           )}
+        </List>
+
+        {/* Categories Section */}
+        <Divider />
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleNavigation('/tags', 'tags')}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Categories
+              </Typography>
+            </ListItemButton>
+          </ListItem>
+          {tags
+            .sort((a, b) => (b.video_count || 0) - (a.video_count || 0))
+            .slice(0, 10)
+            .map(tag => (
+              <ListItem key={tag.id} disablePadding>
+                <ListItemButton
+                  selected={location.pathname === `/tag/${tag.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  onClick={() => handleNavigation(`/tag/${tag.name.toLowerCase().replace(/\s+/g, '-')}`, 'tags')}
+                >
+                  <ListItemIcon>
+                    <TagIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={tag.name} 
+                    primaryTypographyProps={{ 
+                      noWrap: true,
+                      style: { textOverflow: 'ellipsis' }
+                    }} 
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
         </List>
 
         {isAdmin && (
