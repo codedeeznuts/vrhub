@@ -44,6 +44,7 @@ CREATE TABLE videos (
   thumbnail_url VARCHAR(255),
   duration INTEGER, -- Duration in seconds
   release_date DATE,
+  views INTEGER DEFAULT 0, -- Total view count
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

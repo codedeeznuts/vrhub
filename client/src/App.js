@@ -41,7 +41,7 @@ const MainLayout = ({ children }) => (
     <Navbar />
     <Box sx={{ display: 'flex' }}>
       <Sidebar />
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 0.75, mt: 8 }}>
         {children}
       </Box>
     </Box>

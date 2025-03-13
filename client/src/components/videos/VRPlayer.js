@@ -96,7 +96,7 @@ const VRPlayer = ({ videoUrl, title, thumbnailUrl }) => {
         containerRef.current.innerHTML = '';
       }
     };
-  }, [videoUrl, title, thumbnailUrl]); // Dependencies
+  }, [videoUrl, title, thumbnailUrl]);
   
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>

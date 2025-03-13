@@ -221,7 +221,7 @@ const AdminLayout = () => {
         component="main" 
         sx={{ 
           flexGrow: 1, 
-          p: 3, 
+          p: 0.75, 
           mt: 8,
           width: { sm: `calc(100% - ${open ? drawerWidth : 0}px)` },
           ml: { sm: open ? `${drawerWidth}px` : 0 },

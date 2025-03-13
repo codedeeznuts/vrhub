@@ -11,7 +11,8 @@ import {
 } from '@mui/material';
 import {
   Favorite as FavoriteIcon,
-  FavoriteBorder as FavoriteBorderIcon
+  FavoriteBorder as FavoriteBorderIcon,
+  Visibility as VisibilityIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import AuthContext from '../../context/AuthContext';
@@ -68,6 +69,18 @@ const VideoCard = ({ video, onLikeToggle }) => {
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return '1 day ago';
     return `${diffDays} days ago`;
+  };
+
+  // Format view count
+  const formatViewCount = (count) => {
+    if (!count && count !== 0) return '0';
+    
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
   };
 
   return (
@@ -173,8 +186,17 @@ const VideoCard = ({ video, onLikeToggle }) => {
             </Typography>
           </Box>
           
-          {/* Likes */}
+          {/* Views and Likes */}
           <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+            {/* Views */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+              <VisibilityIcon fontSize="small" sx={{ color: 'text.secondary', fontSize: '1rem', mr: 0.5 }} />
+              <Typography variant="caption" color="text.secondary">
+                {formatViewCount(video.views || 0)}
+              </Typography>
+            </Box>
+            
+            {/* Likes */}
             <IconButton 
               size="small" 
               color="secondary" 

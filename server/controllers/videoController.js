@@ -40,7 +40,8 @@ exports.getVideos = async (req, res) => {
     
     // Build the base query
     let query = `
-      SELECT v.*, s.name as studio_name, 
+      SELECT v.id, v.title, v.description, v.studio_id, v.video_url, v.thumbnail_url, v.created_at, v.views,
+      s.name as studio_name,
       COUNT(DISTINCT l.user_id) as likes_count
       ${userId ? `, (SELECT COUNT(1) > 0 FROM likes WHERE user_id = $${paramIndex} AND video_id = v.id) as is_liked` : ''}
       FROM videos v
@@ -64,114 +65,63 @@ exports.getVideos = async (req, res) => {
     query += ` GROUP BY v.id, s.name`;
     
     // Add ORDER BY based on sortBy parameter
-    switch (sortBy) {
-      case 'oldest':
-        query += ` ORDER BY v.created_at ASC`;
-        break;
-      case 'most_liked':
-        query += ` ORDER BY likes_count DESC, v.created_at DESC`;
-        break;
-      case 'title':
-        query += ` ORDER BY v.title ASC`;
-        break;
-      case 'random':
-        query += ` ORDER BY RANDOM()`;
-        break;
-      case 'newest':
-      default:
-        query += ` ORDER BY v.created_at DESC`;
-        break;
+    if (sortBy === 'oldest') {
+      query += ` ORDER BY v.created_at ASC`;
+    } else if (sortBy === 'most-liked') {
+      query += ` ORDER BY likes_count DESC, v.created_at DESC`;
+    } else if (sortBy === 'most-viewed') {
+      query += ` ORDER BY v.views DESC, v.created_at DESC`;
+    } else {
+      // Default: newest
+      query += ` ORDER BY v.created_at DESC`;
     }
     
-    // Add pagination
+    // Add LIMIT and OFFSET
     query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-    
-    // Add user ID to params if authenticated
-    if (userId) {
-      params.push(userId);
-      paramIndex++;
-    }
-    
-    // Add limit and offset to params
     params.push(limit, offset);
     
-    // Log the query and params for debugging
-    console.log('Query:', query);
-    console.log('Params:', params);
-    
     // Execute the query
-    const videosResult = await db.query(query, params);
-    console.log('Videos result rows:', videosResult.rows.length);
+    const result = await db.query(query, params);
     
-    // Get tags for each video
-    const videos = await Promise.all(
-      videosResult.rows.map(async (video) => {
-        try {
-          const tagsResult = await db.query(`
-            SELECT t.id, t.name
-            FROM tags t
-            JOIN video_tags vt ON t.id = vt.tag_id
-            WHERE vt.video_id = $1
-          `, [video.id]);
-          
-          return {
-            ...video,
-            tags: tagsResult.rows
-          };
-        } catch (err) {
-          console.error('Error getting tags for video:', err);
-          return {
-            ...video,
-            tags: []
-          };
-        }
-      })
-    );
-    
-    // Count total videos for pagination
-    let countQuery = `
+    // Get total count for pagination
+    const countQuery = `
       SELECT COUNT(DISTINCT v.id) as total
       FROM videos v
+      ${tagId ? `JOIN video_tags vt ON v.id = vt.video_id AND vt.tag_id = $1` : ''}
+      ${conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''}
     `;
     
-    // Add tag filter if provided
-    if (tagId) {
-      countQuery += ` JOIN video_tags vt ON v.id = vt.video_id AND vt.tag_id = $1`;
-      const countParams = [tagId];
-      
-      // Add WHERE clause if there are conditions
-      if (conditions.length > 0) {
-        countQuery += ` WHERE ${conditions.join(' AND ')}`;
-      }
-      
-      const countResult = await db.query(countQuery, countParams);
-      var totalVideos = parseInt(countResult.rows[0].total);
-    } else {
-      // Add WHERE clause if there are conditions
-      if (conditions.length > 0) {
-        countQuery += ` WHERE ${conditions.join(' AND ')}`;
-      }
-      
-      const countResult = await db.query(countQuery, params.slice(0, conditions.length));
-      var totalVideos = parseInt(countResult.rows[0].total);
+    const countParams = tagId ? [tagId] : [];
+    if (search) {
+      countParams.push(`%${search}%`);
+    }
+    if (studioId) {
+      countParams.push(studioId);
     }
     
-    const totalPages = Math.ceil(totalVideos / limit);
-    console.log('Total videos:', totalVideos, 'Total pages:', totalPages);
+    const countResult = await db.query(countQuery, countParams);
+    const total = parseInt(countResult.rows[0].total);
     
-    // Return the videos with pagination info
+    // Calculate pagination info
+    const totalPages = Math.ceil(total / limit);
+    const hasMore = page < totalPages;
+    const nextPage = hasMore ? page + 1 : null;
+    
+    // Return the results
     res.json({
-      videos,
+      videos: result.rows,
       pagination: {
         page,
         limit,
-        totalVideos,
-        totalPages
+        total,
+        totalPages,
+        hasMore,
+        nextPage
       }
     });
   } catch (err) {
-    console.error('Error in getVideos:', err);
-    res.status(500).json({ error: 'Server error' });
+    console.error(err.message);
+    res.status(500).send('Server error');
   }
 };
 
@@ -185,7 +135,7 @@ exports.getVideoById = async (req, res) => {
     
     // Query for video details
     const videoResult = await db.query(`
-      SELECT v.id, v.title, v.description, v.studio_id, v.video_url, v.thumbnail_url, v.created_at,
+      SELECT v.id, v.title, v.description, v.studio_id, v.video_url, v.thumbnail_url, v.created_at, v.views,
              s.name as studio_name,
              COUNT(DISTINCT l.user_id) as likes_count
              ${userId ? `, (SELECT COUNT(1) > 0 FROM likes WHERE user_id = $1 AND video_id = v.id) as is_liked` : ''}
@@ -215,26 +165,61 @@ exports.getVideoById = async (req, res) => {
     // If user is authenticated, record view history
     if (userId) {
       try {
-        // Check if user has viewed this video before
+        // Check if user has viewed this video before in the last 24 hours
         const viewCheck = await db.query(
-          'SELECT * FROM view_history WHERE user_id = $1 AND video_id = $2',
+          'SELECT * FROM view_history WHERE user_id = $1 AND video_id = $2 AND viewed_at > NOW() - INTERVAL \'24 hours\'',
           [userId, id]
         );
         
+        // Start a transaction
+        await db.query('BEGIN');
+        
         if (viewCheck.rows.length > 0) {
-          // Update existing view history
+          // User has viewed this video in the last 24 hours, just update the timestamp
           await db.query(
-            'UPDATE view_history SET viewed_at = CURRENT_TIMESTAMP, view_count = view_count + 1 WHERE user_id = $1 AND video_id = $2',
+            'UPDATE view_history SET viewed_at = CURRENT_TIMESTAMP WHERE user_id = $1 AND video_id = $2',
             [userId, id]
           );
         } else {
-          // Create new view history entry
-          await db.query(
-            'INSERT INTO view_history (user_id, video_id) VALUES ($1, $2)',
+          // User hasn't viewed this video in the last 24 hours
+          // Check if user has ever viewed this video
+          const historyCheck = await db.query(
+            'SELECT * FROM view_history WHERE user_id = $1 AND video_id = $2',
             [userId, id]
           );
+          
+          if (historyCheck.rows.length > 0) {
+            // Update existing view history and increment view_count
+            await db.query(
+              'UPDATE view_history SET viewed_at = CURRENT_TIMESTAMP, view_count = view_count + 1 WHERE user_id = $1 AND video_id = $2',
+              [userId, id]
+            );
+          } else {
+            // Create new view history entry
+            await db.query(
+              'INSERT INTO view_history (user_id, video_id) VALUES ($1, $2)',
+              [userId, id]
+            );
+          }
+          
+          // Increment the video's view count
+          await db.query('UPDATE videos SET views = views + 1 WHERE id = $1', [id]);
         }
+        
+        // Commit transaction
+        await db.query('COMMIT');
+        
+        // Get the updated view count
+        const updatedViewCount = await db.query('SELECT views FROM videos WHERE id = $1', [id]);
+        video.views = updatedViewCount.rows[0].views;
       } catch (viewErr) {
+        // Rollback transaction on error
+        try {
+          await db.query('ROLLBACK');
+        } catch (rollbackErr) {
+          console.error('Error rolling back transaction:', rollbackErr);
+        }
+        
         console.error('Error recording view history:', viewErr);
         // Continue even if view history fails
       }
@@ -243,6 +228,70 @@ exports.getVideoById = async (req, res) => {
     res.json(video);
   } catch (err) {
     console.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
+
+// Record an anonymous view for a video
+exports.recordAnonymousView = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get client IP address
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    
+    // Check if video exists
+    const videoCheck = await db.query('SELECT * FROM videos WHERE id = $1', [id]);
+    
+    if (videoCheck.rows.length === 0) {
+      return res.status(404).json({ msg: 'Video not found' });
+    }
+    
+    // Check if this IP has already viewed this video in the last 24 hours
+    const viewCheck = await db.query(
+      'SELECT * FROM anonymous_views WHERE ip_address = $1 AND video_id = $2 AND viewed_at > NOW() - INTERVAL \'24 hours\'',
+      [ip, id]
+    );
+    
+    if (viewCheck.rows.length === 0) {
+      // This is a new view from this IP within 24 hours
+      
+      // Start a transaction
+      await db.query('BEGIN');
+      
+      // Record the anonymous view
+      await db.query(
+        'INSERT INTO anonymous_views (ip_address, video_id) VALUES ($1, $2)',
+        [ip, id]
+      );
+      
+      // Increment the video's view count
+      await db.query('UPDATE videos SET views = views + 1 WHERE id = $1', [id]);
+      
+      await db.query('COMMIT');
+    }
+    
+    // Get the updated video details with view count
+    const result = await db.query(`
+      SELECT v.id, v.views
+      FROM videos v
+      WHERE v.id = $1
+    `, [id]);
+    
+    res.json({ 
+      success: true, 
+      videoId: result.rows[0].id,
+      views: result.rows[0].views 
+    });
+  } catch (err) {
+    // Rollback transaction on error if it was started
+    try {
+      await db.query('ROLLBACK');
+    } catch (rollbackErr) {
+      console.error('Error rolling back transaction:', rollbackErr);
+    }
+    
+    console.error('Error recording anonymous view:', err);
     res.status(500).send('Server error');
   }
 };
@@ -386,7 +435,7 @@ exports.deleteVideo = async (req, res) => {
 async function getVideoWithDetails(videoId) {
   // Get video with studio
   const videoResult = await db.query(`
-    SELECT v.id, v.title, v.description, v.studio_id, v.video_url, v.thumbnail_url, v.created_at,
+    SELECT v.id, v.title, v.description, v.studio_id, v.video_url, v.thumbnail_url, v.created_at, v.views,
            s.name as studio_name,
            COUNT(l.user_id) as likes_count
     FROM videos v

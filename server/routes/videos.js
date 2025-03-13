@@ -20,6 +20,11 @@ router.get('/:id', (req, res, next) => {
   }
 }, videoController.getVideoById);
 
+// @route   POST api/videos/:id/view
+// @desc    Record an anonymous view for a video
+// @access  Public
+router.post('/:id/view', videoController.recordAnonymousView);
+
 // @route   POST api/videos
 // @desc    Create a new video
 // @access  Admin only
