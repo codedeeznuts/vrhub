@@ -83,58 +83,62 @@ const TagsPage = () => {
 
   return (
     <Container maxWidth="xl">
-      <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
-        All Tags
-      </Typography>
+      <Box sx={{ mt: 2, mb: 4 }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
+          All Tags
+        </Typography>
 
-      {tags.length === 0 ? (
-        <Alert severity="info">No tags found</Alert>
-      ) : (
-        <>
-          <Grid container spacing={2}>
-            {getCurrentPageTags().map(tag => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={tag.id}>
-                <Card 
-                  sx={{ 
-                    height: '100%',
-                    border: '1px solid rgba(0, 0, 0, 0.12)',
-                    borderRadius: 1,
-                    boxShadow: 'none'
-                  }}
-                >
-                  <CardActionArea 
-                    sx={{ height: '100%' }}
+        {tags.length === 0 ? (
+          <Alert severity="info">No tags found</Alert>
+        ) : (
+          <>
+            <Grid container spacing={2}>
+              {getCurrentPageTags().map(tag => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={tag.id}>
+                  <Card 
+                    sx={{ 
+                      height: '100%', 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      cursor: 'pointer',
+                      '&:hover': { boxShadow: 6 }
+                    }}
                     onClick={() => handleTagClick(tag)}
                   >
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      image={tag.thumbnail_url || DEFAULT_THUMBNAIL}
-                      alt={tag.name}
-                    />
-                    <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                      <TagIcon sx={{ mr: 1, color: 'primary.main' }} />
-                      <Typography variant="h6">{tag.name}</Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-
-          {totalPages > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <Pagination 
-                count={totalPages} 
-                page={page} 
-                onChange={handlePageChange} 
-                color="primary" 
-                size="large"
-              />
-            </Box>
-          )}
-        </>
-      )}
+                    <CardActionArea sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+                      <CardMedia
+                        component="img"
+                        height="140"
+                        image={tag.thumbnail_url || DEFAULT_THUMBNAIL}
+                        alt={tag.name}
+                      />
+                      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <Typography variant="h6" component="div" align="center">
+                          {tag.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" align="center">
+                          {tag.video_count || 0} videos
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+            
+            {totalPages > 1 && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Pagination 
+                  count={totalPages} 
+                  page={page} 
+                  onChange={handlePageChange} 
+                  color="primary" 
+                />
+              </Box>
+            )}
+          </>
+        )}
+      </Box>
     </Container>
   );
 };

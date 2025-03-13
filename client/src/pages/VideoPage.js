@@ -195,16 +195,8 @@ const VideoPage = () => {
                 </Box>
               </Box>
               
-              {/* Views and Likes */}
+              {/* Likes */}
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                {/* Views */}
-                <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                  <VisibilityIcon sx={{ color: 'text.secondary', fontSize: '1.2rem', mr: 0.5 }} />
-                  <Typography variant="body2" color="text.secondary">
-                    {formatViewCount(video.views || 0)}
-                  </Typography>
-                </Box>
-                
                 {/* Like Button */}
                 <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={handleLikeToggle}>
                   {video.isLiked ? 

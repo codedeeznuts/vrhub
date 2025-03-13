@@ -12,7 +12,7 @@ import {
 import {
   NewReleases as NewIcon,
   Favorite as LikeIcon,
-  Shuffle as RandomIcon
+  TrendingUp as TrendingIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import VideoCard from '../components/videos/VideoCard';
@@ -88,24 +88,26 @@ const TagVideos = () => {
 
   return (
     <Container maxWidth="xl">
-      <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-        {tag?.name} Videos
-      </Typography>
-      
-      {/* Filter buttons */}
-      <FilterButtons value={sortBy} onChange={handleSortChange} />
-      
-      {videos.length === 0 ? (
-        <Alert severity="info">No videos found for this tag</Alert>
-      ) : (
-        <Grid container spacing={1.5}>
-          {videos.map(video => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={video.id}>
-              <VideoCard video={video} />
-            </Grid>
-          ))}
-        </Grid>
-      )}
+      <Box sx={{ mt: 2, mb: 4 }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+          {tag?.name} Videos
+        </Typography>
+        
+        {/* Filter buttons */}
+        <FilterButtons value={sortBy} onChange={handleSortChange} />
+        
+        {videos.length === 0 ? (
+          <Alert severity="info">No videos found for this tag</Alert>
+        ) : (
+          <Grid container spacing={1.5}>
+            {videos.map(video => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={video.id}>
+                <VideoCard video={video} />
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
     </Container>
   );
 };

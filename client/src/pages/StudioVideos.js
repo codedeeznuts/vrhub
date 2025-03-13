@@ -13,7 +13,7 @@ import {
 import {
   NewReleases as NewIcon,
   Favorite as LikeIcon,
-  Shuffle as RandomIcon
+  TrendingUp as TrendingIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import VideoCard from '../components/videos/VideoCard';
@@ -89,47 +89,49 @@ const StudioVideos = () => {
 
   return (
     <Container maxWidth="xl">
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        {studio?.logo_url && (
-          <Avatar 
-            src={studio.logo_url} 
-            alt={studio.name}
-            sx={{ width: 64, height: 64, mr: 2 }}
-          />
-        )}
-        <Box>
-          <Typography variant="h4" component="h1" gutterBottom>
-            {studio?.name} Videos
-          </Typography>
-          
-          {studio?.description && (
-            <Typography variant="body1" color="text.secondary">
-              {studio.description}
-            </Typography>
+      <Box sx={{ mt: 2, mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          {studio?.logo_url && (
+            <Avatar 
+              src={studio.logo_url} 
+              alt={studio.name}
+              sx={{ width: 64, height: 64, mr: 2 }}
+            />
           )}
-          
-          {studio?.website && (
-            <Typography variant="body2" color="primary" component="a" href={studio.website} target="_blank" rel="noopener noreferrer">
-              Visit Website
+          <Box>
+            <Typography variant="h4" component="h1" gutterBottom>
+              {studio?.name} Videos
             </Typography>
-          )}
+            
+            {studio?.description && (
+              <Typography variant="body1" color="text.secondary">
+                {studio.description}
+              </Typography>
+            )}
+            
+            {studio?.website && (
+              <Typography variant="body2" color="primary" component="a" href={studio.website} target="_blank" rel="noopener noreferrer">
+                Visit Website
+              </Typography>
+            )}
+          </Box>
         </Box>
+        
+        {/* Filter buttons */}
+        <FilterButtons value={sortBy} onChange={handleSortChange} />
+        
+        {videos.length === 0 ? (
+          <Alert severity="info">No videos found for this studio</Alert>
+        ) : (
+          <Grid container spacing={1.5}>
+            {videos.map(video => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={video.id}>
+                <VideoCard video={video} />
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Box>
-      
-      {/* Filter buttons */}
-      <FilterButtons value={sortBy} onChange={handleSortChange} />
-      
-      {videos.length === 0 ? (
-        <Alert severity="info">No videos found for this studio</Alert>
-      ) : (
-        <Grid container spacing={1.5}>
-          {videos.map(video => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={video.id}>
-              <VideoCard video={video} />
-            </Grid>
-          ))}
-        </Grid>
-      )}
     </Container>
   );
 };

@@ -8,7 +8,7 @@ import {
 import {
   NewReleases as NewIcon,
   Favorite as LikeIcon,
-  Shuffle as RandomIcon
+  TrendingUp as TrendingIcon
 } from '@mui/icons-material';
 
 const FilterButtons = ({ value, onChange }) => {
@@ -48,13 +48,13 @@ const FilterButtons = ({ value, onChange }) => {
           <NewIcon fontSize="small" sx={{ mr: 0.25, fontSize: '0.875rem' }} />
           <Typography variant="caption" sx={{ fontWeight: 'medium' }}>NEW</Typography>
         </ToggleButton>
+        <ToggleButton value="most-viewed" aria-label="sort by most viewed">
+          <TrendingIcon fontSize="small" sx={{ mr: 0.25, fontSize: '0.875rem' }} />
+          <Typography variant="caption" sx={{ fontWeight: 'medium' }}>TRENDING</Typography>
+        </ToggleButton>
         <ToggleButton value="most_liked" aria-label="sort by most liked">
           <LikeIcon fontSize="small" sx={{ mr: 0.25, fontSize: '0.875rem' }} />
           <Typography variant="caption" sx={{ fontWeight: 'medium' }}>MOST LIKED</Typography>
-        </ToggleButton>
-        <ToggleButton value="random" aria-label="sort randomly">
-          <RandomIcon fontSize="small" sx={{ mr: 0.25, fontSize: '0.875rem' }} />
-          <Typography variant="caption" sx={{ fontWeight: 'medium' }}>RANDOM</Typography>
         </ToggleButton>
       </ToggleButtonGroup>
     </Box>

@@ -114,20 +114,6 @@ const VideoCard = ({ video, onLikeToggle }) => {
             objectFit: 'cover'
           }}
         />
-        <Box 
-          sx={{ 
-            position: 'absolute', 
-            bottom: 0, 
-            right: 0, 
-            bgcolor: 'rgba(0,0,0,0.7)', 
-            px: 1, 
-            py: 0.5
-          }}
-        >
-          <Typography variant="caption" color="white">
-            {video.duration ? `${Math.floor(video.duration / 60)}:${(video.duration % 60).toString().padStart(2, '0')}` : ''}
-          </Typography>
-        </Box>
       </Box>
       
       {/* Video Info Section */}

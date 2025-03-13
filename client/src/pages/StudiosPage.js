@@ -83,73 +83,67 @@ const StudiosPage = () => {
 
   return (
     <Container maxWidth="xl">
-      <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
-        All Studios
-      </Typography>
+      <Box sx={{ mt: 2, mb: 4 }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
+          All Studios
+        </Typography>
 
-      {studios.length === 0 ? (
-        <Alert severity="info">No studios found</Alert>
-      ) : (
-        <>
-          <Grid container spacing={2}>
-            {getCurrentPageStudios().map(studio => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={studio.id}>
-                <Card 
-                  sx={{ 
-                    height: '100%',
-                    border: '1px solid rgba(0, 0, 0, 0.12)',
-                    borderRadius: 1,
-                    boxShadow: 'none'
-                  }}
-                >
-                  <CardActionArea 
-                    sx={{ height: '100%' }}
+        {studios.length === 0 ? (
+          <Alert severity="info">No studios found</Alert>
+        ) : (
+          <>
+            <Grid container spacing={2}>
+              {getCurrentPageStudios().map(studio => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={studio.id}>
+                  <Card 
+                    sx={{ 
+                      height: '100%', 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      cursor: 'pointer',
+                      '&:hover': { boxShadow: 6 }
+                    }}
                     onClick={() => handleStudioClick(studio)}
                   >
-                    <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
-                      <Avatar 
-                        src={studio.logo_url} 
-                        alt={studio.name}
-                        sx={{ width: 64, height: 64, mr: 2 }}
-                      />
-                      <Box sx={{ width: 'calc(100% - 80px)', pr: 1 }}>
-                        <Typography variant="h6" noWrap>{studio.name}</Typography>
+                    <CardActionArea sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+                      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Avatar 
+                          src={studio.logo_url} 
+                          alt={studio.name}
+                          sx={{ width: 80, height: 80 }}
+                        />
+                      </Box>
+                      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <Typography variant="h6" component="div" align="center">
+                          {studio.name}
+                        </Typography>
                         {studio.description && (
-                          <Typography 
-                            variant="body2" 
-                            color="text.secondary" 
-                            sx={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical'
-                            }}
-                          >
-                            {studio.description}
+                          <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+                            {studio.description.length > 100 
+                              ? `${studio.description.substring(0, 100)}...` 
+                              : studio.description}
                           </Typography>
                         )}
-                      </Box>
-                    </Box>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-
-          {totalPages > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <Pagination 
-                count={totalPages} 
-                page={page} 
-                onChange={handlePageChange} 
-                color="primary" 
-                size="large"
-              />
-            </Box>
-          )}
-        </>
-      )}
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+            
+            {totalPages > 1 && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Pagination 
+                  count={totalPages} 
+                  page={page} 
+                  onChange={handlePageChange} 
+                  color="primary" 
+                />
+              </Box>
+            )}
+          </>
+        )}
+      </Box>
     </Container>
   );
 };

@@ -14,7 +14,7 @@ import {
   Sort as SortIcon,
   NewReleases as NewIcon,
   Favorite as LikeIcon,
-  Shuffle as RandomIcon
+  TrendingUp as TrendingIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import VideoCard from '../components/videos/VideoCard';
