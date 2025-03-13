@@ -269,24 +269,38 @@ const VideoPage = () => {
             </Paper>
           </Grid>
           
-          {/* Right Column - Related Videos */}
+          {/* Right Column - Placeholder for future content */}
           <Grid item xs={12} md={3}>
-            <Typography variant="h6" gutterBottom>
-              Related Videos
-            </Typography>
-            {relatedVideos.length > 0 ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {relatedVideos.map(relatedVideo => (
-                  <VideoCard key={relatedVideo.id} video={relatedVideo} />
-                ))}
-              </Box>
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                No related videos found
+            <Paper sx={{ p: 2, height: '100%', border: '1px solid #e0e0e0', boxShadow: 'none' }}>
+              <Typography variant="h6" gutterBottom>
+                Additional Content
               </Typography>
-            )}
+              <Typography variant="body2" color="text.secondary">
+                This space is reserved for future content.
+              </Typography>
+            </Paper>
           </Grid>
         </Grid>
+        
+        {/* Related Videos Section - Full Width */}
+        <Box sx={{ mt: 4, border: '1px solid #e0e0e0', p: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Related Videos
+          </Typography>
+          {relatedVideos.length > 0 ? (
+            <Grid container spacing={2}>
+              {relatedVideos.map(relatedVideo => (
+                <Grid item xs={12} sm={6} md={3} key={relatedVideo.id}>
+                  <VideoCard video={relatedVideo} />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No related videos found
+            </Typography>
+          )}
+        </Box>
       </Box>
     </Container>
   );

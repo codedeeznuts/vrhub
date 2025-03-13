@@ -101,7 +101,8 @@ const TagsPage = () => {
                       display: 'flex', 
                       flexDirection: 'column',
                       cursor: 'pointer',
-                      '&:hover': { boxShadow: 6 }
+                      boxShadow: 'none',
+                      border: '1px solid #e0e0e0'
                     }}
                     onClick={() => handleTagClick(tag)}
                   >

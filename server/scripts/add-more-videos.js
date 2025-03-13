@@ -1,4 +1,4 @@
-const db = require('../config/db');
+ const db = require('../config/db');
 
 /**
  * Script to add 30 more videos to the database for pagination testing

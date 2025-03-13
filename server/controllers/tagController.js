@@ -3,7 +3,15 @@ const db = require('../config/db');
 // Get all tags
 exports.getTags = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM tags ORDER BY name');
+    // Update query to include video count for each tag
+    const result = await db.query(`
+      SELECT t.id, t.name, t.description, t.thumbnail_url, 
+             COUNT(vt.video_id) as video_count
+      FROM tags t
+      LEFT JOIN video_tags vt ON t.id = vt.tag_id
+      GROUP BY t.id
+      ORDER BY t.name
+    `);
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
