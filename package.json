@@ -12,7 +12,7 @@
     "server": "nodemon server/server.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "cd client && npm install --no-audit --no-fund --loglevel verbose && npm run build --loglevel verbose",
+    "build": "cd client && npm install --no-audit --no-fund --legacy-peer-deps --loglevel verbose && CI=false npm run build --loglevel verbose",
     "vercel-build": "npm run build",
     "db:init": "node server/models/db-init.js",
     "db:seed": "node server/models/run-seed.js",

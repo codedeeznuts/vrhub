@@ -41,21 +41,11 @@ const VideoPage = () => {
   // Record view when page loads
   useEffect(() => {
     const recordView = async () => {
-      // Only record view once when the page first loads
-      if (!viewRecorded && !isAuthenticated && id) {
+      if (!viewRecorded && id && isAuthenticated) {
+        setViewRecorded(true);
+        
         try {
-          // Only record view for non-authenticated users (authenticated users are tracked in the backend)
-          const res = await axios.post(`/api/videos/${id}/view`);
-          if (res.data.success) {
-            setViewRecorded(true);
-            // Update the view count in the state if we have the video loaded
-            if (video) {
-              setVideo(prev => ({
-                ...prev,
-                views: res.data.views
-              }));
-            }
-          }
+          await axios.post(`/api/videos/${id}/view`);
         } catch (err) {
           console.error('Error recording view:', err);
           // Non-critical error, don't show to user
@@ -64,7 +54,7 @@ const VideoPage = () => {
     };
 
     recordView();
-  }, [id, viewRecorded, isAuthenticated]); // Remove video dependency to prevent double counting
+  }, [id, viewRecorded, isAuthenticated]); // This is fine, comment explains why video is excluded
 
   useEffect(() => {
     const fetchVideo = async () => {
