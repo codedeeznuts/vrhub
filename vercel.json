@@ -9,11 +9,10 @@
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "client/build"
+        "distDir": "build"
       }
     }
   ],
-  "outputDirectory": "client/build",
   "routes": [
     {
       "src": "/api/(.*)",
@@ -23,8 +22,8 @@
       "handle": "filesystem"
     },
     {
-      "src": "/.*",
-      "dest": "/client/build/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 } 
