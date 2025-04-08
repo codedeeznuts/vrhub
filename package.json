@@ -14,7 +14,8 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "disable-eslint": "node temp-fix.js",
     "build": "npm run disable-eslint && cd client && npm install --no-audit --no-fund --legacy-peer-deps --loglevel verbose && DISABLE_ESLINT_PLUGIN=true CI=false npm run build --loglevel verbose",
-    "vercel-build": "npm run build",
+    "postbuild": "echo '{\"root\":\"client/build/\",\"routes\":{\"/**\":\"index.html\"}}' > client/build/static.json",
+    "vercel-build": "npm run build && npm run postbuild",
     "db:init": "node server/models/db-init.js",
     "db:seed": "node server/models/run-seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
